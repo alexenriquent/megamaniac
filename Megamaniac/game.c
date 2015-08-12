@@ -1,9 +1,12 @@
 #include "game.h"
 
+#define SPRITE_WIDTH 1
+#define SPRITE_HEIGHT 1
 #define UPDATE_SCREEN 1
 #define NORMAL_MODE 0
 #define GAME_OVER -1
 #define RESET -2
+#define INTERVAL 35
 
 typedef char *string;
 
@@ -12,6 +15,8 @@ string level_1 = "Level: 1 - Basic";
 string score_str = "score: ";
 string lives_str = "lives: ";
 char line = '-';
+string bullet_img = ".";
+bool shooting = false;
 
 void setup_game() {
 	setup_screen();
@@ -43,6 +48,13 @@ int play_game() {
 	} else if ( key == 'R' || key == 'r') {
 		return RESET;
 	}
+	if (key == 'S' || key == 's') {
+		if (!shooting) {
+			shoot_bullet();
+			shooting = false;
+		}
+		return UPDATE_SCREEN;
+	}
 	if (!is_alive()) {
 		return NORMAL_MODE;
 	}
@@ -51,6 +63,34 @@ int play_game() {
 	}
 	
 	return NORMAL_MODE;
+}
+
+void shoot_bullet() {
+	int key = get_char();
+	int x = x_pos();
+	int y = y_pos();
+	shooting = true;
+	sprite_id bullet = create_sprite((double)x, (double)y, 
+					SPRITE_WIDTH, SPRITE_HEIGHT, bullet_img);
+
+	while (bullet->y > 0) {
+		clear_screen();
+		update_player(key);
+		draw_screen();
+		draw_player();
+		draw_aliens();
+		update_bullet(bullet);
+		draw_sprite(bullet);
+		show_screen();
+		key = get_char();
+		timer_pause(INTERVAL);
+	}
+}
+
+void update_bullet(sprite_id shot) {
+	shot->dy = -1;
+	shot->y += shot->dy;
+
 }
 
 void update_game() {

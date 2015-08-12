@@ -4,7 +4,6 @@
 #define SPRITE_HEIGHT 1
 #define RIGHT 1
 #define LEFT -1
-#define INTERVAL 35
 
 typedef char *string;
 
@@ -12,17 +11,14 @@ sprite_id player;
 bool alive;
 string alive_img = "$";
 string dead_img = "_";
-string bullet_img = ".";
 int score = 0;
 int lives = 3;
-bool shooting;
 
 void setup_player() {
 	int x_player = screen_width() / 2;
 	int y_player = screen_height() * 78 / 100;
 
 	alive = true;
-	shooting = false;
 	player = create_sprite((double)x_player, (double)y_player, 
 			SPRITE_WIDTH, SPRITE_HEIGHT, alive_img);
 }
@@ -47,39 +43,7 @@ bool update_player(int key) {
 		}
 		return true;
 	} 
-	if (key == 'S' || key == 's') {
-		if (!shooting) {
-			shoot_bullet();
-			shooting = false;
-		}
-		return true;
-	}
 	return false;
-}
-
-void shoot_bullet() {
-	int key = get_char();
-	shooting = true;
-	sprite_id bullet = create_sprite((double)player->x, (double)player->y, 
-					SPRITE_WIDTH, SPRITE_HEIGHT, bullet_img);
-
-	while (bullet->y > 0) {
-		clear_screen();
-		update_player(key);
-		draw_screen();
-		draw_player();
-		update_bullet(bullet);
-		draw_sprite(bullet);
-		show_screen();
-		key = get_char();
-		timer_pause(INTERVAL);
-	}
-}
-
-void update_bullet(sprite_id shot) {
-	shot->dy = -1;
-	shot->y += shot->dy;
-
 }
 
 int get_score() {
@@ -106,7 +70,16 @@ void reset_player() {
 	score = 0;
 	lives = 3;
 	alive = true;
-	shooting = false;
 	player->x = x_player;
 	player->y = y_player;
+}
+
+int x_pos() {
+	int x = player->x;
+	return x;
+}
+
+int y_pos() {
+	int y = player->y;
+	return y;
 }
