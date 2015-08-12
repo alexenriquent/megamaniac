@@ -1,5 +1,4 @@
 #include "game.h"
-#include "player.h"
 
 #define UPDATE_SCREEN 1
 #define NORMAL_MODE 0
@@ -18,6 +17,7 @@ void setup_game() {
 	setup_screen();
 	draw_screen();
 	setup_player();
+	setup_aliens();
 	draw_player();
 	show_screen();
 }
@@ -57,6 +57,7 @@ void update_game() {
 	clear_screen();
 	draw_screen();
 	draw_player();
+	draw_aliens();
 	show_screen();
 }
 

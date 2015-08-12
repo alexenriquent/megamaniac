@@ -3,8 +3,8 @@
 
 #include <string.h>
 #include "cab202_graphics.h"
-#include "cab202_sprites.h"
-#include "cab202_timers.h"
+#include "player.h"
+#include "aliens.h"
 
 void setup_game();
 void draw_screen();
