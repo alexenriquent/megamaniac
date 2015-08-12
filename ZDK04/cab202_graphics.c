@@ -4,6 +4,7 @@
 * Base-level curses-based graphics library for CAB202, 2015 semester 2.
 */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -13,7 +14,7 @@
 #define ABS(x)	(((x) >= 0) ? (x) : -(x))
 #define SIGN(x)	(((x) > 0) - ((x) < 0))
 
-int auto_save_screen = 0;
+bool auto_save_screen = false;
 
 typedef struct Screen {
 	int width;
@@ -386,4 +387,17 @@ void use_default_screen_size( void ) {
 		free( override_screen );
 		override_screen = NULL;
 	}
+}
+
+/**
+*	Draws formatted text at the specified location.
+*	Total length of text must be less than 1000 characters.
+*/
+
+void draw_formatted( int x, int y, const char * format, ... ) {
+	va_list args;
+	va_start( args, format );
+	char buffer[1000];
+	vsprintf( buffer, format, args );
+	draw_string( x, y, buffer );
 }

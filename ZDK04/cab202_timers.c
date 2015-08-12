@@ -15,10 +15,24 @@
 #include <mach/mach.h>
 #endif
 
+/*
+*	create_timer:
+*
+*	Creates a new timer and sets it up with the required interval.
+*
+*	Input:
+*	-  milliseconds: the length of the desired interval between reset and expiry.
+*
+*	Output:
+*		Returns a non-negative ID number that can be used to check the status
+*		of the timer if fewer than TIMER_MAX timers have been created. Otherwise,
+*		returns TIMER_ERROR.
+*/
+
 timer_id create_timer( long milliseconds ) {
 	assert( milliseconds > 0 );
 
-	timer_id timer = (timer_id) malloc( sizeof(cab202_timer_t) );
+	timer_id timer = malloc( sizeof(cab202_timer_t) );
 
 	timer->milliseconds = milliseconds;
 	reset_timer( timer );
@@ -26,12 +40,36 @@ timer_id create_timer( long milliseconds ) {
 	return timer;
 }
 
+/*
+*	reset_timer:
+*
+*	Reset a timer to start a new interval.
+*
+*	Input:
+*	-	timer: the address of a timer which is to be reset.
+*
+*	Output: void.
+*/
 
 void reset_timer( timer_id timer ) {
 	assert( timer != NULL );
 
 	timer->reset_time = get_current_time();
 }
+
+
+/*
+*	timer_expired:
+*
+*	Checks a timer to see if the associated interval has passed. If the interval has
+*	elapsed, the timer is reset automatically, ready to start again.
+*
+*	Input:
+*	-	id: The ID of a timer to check and update.
+*
+*	Output:
+*		Returns TRUE if and only if the interval had elapsed.
+*/
 
 
 int timer_expired( timer_id timer ) {

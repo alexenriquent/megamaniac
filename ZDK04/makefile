@@ -1,4 +1,4 @@
-TARGET=libzdk02.a
+TARGET=libzdk04.a
 FLAGS=-Wall -Werror -std=gnu99
 
 all: $(TARGET)

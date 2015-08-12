@@ -8,13 +8,8 @@
 #ifndef GRAPHICS_H_
 #define GRAPHICS_H_
 
-// define constants to represent the non-standardised bool values TRUE and false.
-#undef TRUE
-#define TRUE    1
-
-#undef false
-#define false   0
-
+#include <stdarg.h>
+#include <stdbool.h>
 
 /**
 *	Set up the terminal display for curses-based graphics.
@@ -110,7 +105,7 @@ void save_screen( void );
  *	Automatically save a screen shot each time if this is non-zero.
  */
 
-extern int auto_save_screen;
+extern bool auto_save_screen;
 
 /**
  *	This function is provided to support programmatic emulation
@@ -131,5 +126,12 @@ void override_screen_size( int width, int height );
  */
 
 void use_default_screen_size( void );
+
+/**
+*	Draws formatted text at the specified location.
+*	Total length of text must be less than 1000 characters.
+*/
+
+void draw_formatted( int x, int y, const char * format, ... );
 
 #endif /* GRAPHICS_H_ */
