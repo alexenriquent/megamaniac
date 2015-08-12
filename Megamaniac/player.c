@@ -11,6 +11,7 @@ sprite_id player;
 bool alive;
 string alive_img = "$";
 string dead_img = "_";
+string bullet_img = ".";
 
 int score = 0;
 int lives = 3;
@@ -43,10 +44,35 @@ bool update_player(int key) {
 			player->x += RIGHT;
 		}
 		return true;
-	} else if (key == 'S' || key == 's') {
-
+	} 
+	if (key == 'S' || key == 's') {
+		shoot_bullet();
+		return true;
 	}
 	return false;
+}
+
+void shoot_bullet() {
+	int key;
+	sprite_id bullet = create_sprite((double)player->x, (double)player->y, 
+					SPRITE_WIDTH, SPRITE_HEIGHT, bullet_img);
+	while (bullet->y > 0) {
+		clear_screen();
+		update_player(key);
+		draw_screen();
+		draw_player();
+		update_bullet(bullet);
+		draw_sprite(bullet);
+		show_screen();
+		key = get_char();
+		timer_pause(35);
+	}
+}
+
+void update_bullet(sprite_id shot) {
+	shot->dy = -1;
+	shot->y += shot->dy;
+
 }
 
 int get_score() {
