@@ -4,6 +4,7 @@
 #define UPDATE_SCREEN 1
 #define NORMAL_MODE 0
 #define GAME_OVER -1
+#define RESET -2
 
 typedef char *string;
 
@@ -40,7 +41,7 @@ int play_game() {
 	if (key == 'Q' || key == 'q') {
 		return GAME_OVER;
 	} else if ( key == 'R' || key == 'r') {
-		return NORMAL_MODE;
+		return RESET;
 	}
 	if (!is_alive()) {
 		return NORMAL_MODE;
@@ -55,6 +56,15 @@ int play_game() {
 void update_game() {
 	clear_screen();
 	draw_screen();
+	draw_player();
+	show_screen();
+}
+
+void reset_game() {
+	clear_screen();
+	reset_player();
+	draw_screen();
+	setup_player();
 	draw_player();
 	show_screen();
 }

@@ -30,11 +30,21 @@ void draw_player() {
 
 bool update_player(int key) {
 	if (key == 'A' || key == 'a') {
-		player->x += LEFT;
+		if (player->x <= 0) {
+			player->x = 0;
+		} else {
+			player->x += LEFT;
+		}
 		return true;
 	} else if (key == 'D' || key == 'd') {
-		player->x += RIGHT;
+		if (player->x >= screen_width() - 1) {
+			player->x = screen_width() - 1;
+		} else {
+			player->x += RIGHT;
+		}
 		return true;
+	} else if (key == 'S' || key == 's') {
+
 	}
 	return false;
 }
@@ -48,5 +58,21 @@ int get_lives() {
 }
 
 bool is_alive() {
+	if (lives > 0) {
+		alive = true;
+	} else {
+		alive = false;
+	}
 	return alive;
+}
+
+void reset_player() {
+	int x_player = screen_width() / 2;
+	int y_player = screen_height() * 78 / 100;
+
+	score = 0;
+	lives = 3;
+	alive = true;
+	player->x = x_player;
+	player->y = y_player;
 }

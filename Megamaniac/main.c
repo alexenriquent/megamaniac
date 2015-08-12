@@ -5,6 +5,7 @@
 #define UPDATE_SCREEN 1
 #define NORMAL_MODE 0
 #define GAME_OVER -1
+#define RESET -2
 
 int main() {
 
@@ -16,6 +17,8 @@ int main() {
 		mode = play_game();
 		if (mode == UPDATE_SCREEN) {
 			update_game();
+		} else if (mode == RESET) {
+			reset_game();
 		}
 	}
 

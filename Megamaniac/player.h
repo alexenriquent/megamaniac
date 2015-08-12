@@ -12,5 +12,6 @@ void cleanup_player();
 int get_score();
 int get_lives();
 bool is_alive();
+void reset_player();
 
 #endif 
