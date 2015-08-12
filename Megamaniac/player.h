@@ -12,6 +12,8 @@ void draw_player();
 bool update_player(int key);
 int get_score();
 int get_lives();
+void update_score(int points);
+void update_lives();
 bool is_alive();
 void reset_player();
 int x_pos();

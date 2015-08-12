@@ -57,3 +57,11 @@ void draw_aliens() {
 		draw_sprite(aliens[i]);
 	}
 }
+
+void change_alien_status(int x, int y) {
+	for (int i = 0; i < ALIEN_COUNT; i++) {
+		if (aliens[i]->x == x && aliens[i]->y == y) {
+			aliens[i]->is_visible = false;
+		}
+	}
+}

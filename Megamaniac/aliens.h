@@ -8,5 +8,6 @@ void setup_aliens();
 void create_aliens();
 void reset_aliens();
 void draw_aliens();
+void change_alien_status(int x, int y);
 
 #endif 

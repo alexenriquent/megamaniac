@@ -7,6 +7,8 @@
 #define GAME_OVER -1
 #define RESET -2
 #define INTERVAL 35
+#define SCORE_PER_ALIEN 30
+#define SCORE_PER_LEVEL 500
 
 typedef char *string;
 
@@ -91,6 +93,13 @@ void update_bullet(sprite_id shot) {
 	shot->dy = -1;
 	shot->y += shot->dy;
 
+	if (get_screen_char(shot->x, shot->y) == '@') {
+		shot->is_visible = false;
+		change_alien_status(shot->x, shot->y);
+		shot->y = 0;
+		update_score(SCORE_PER_ALIEN);
+	}
+
 }
 
 void update_game() {
@@ -107,6 +116,8 @@ void reset_game() {
 	draw_screen();
 	setup_player();
 	draw_player();
+	setup_aliens();
+	draw_aliens();
 	show_screen();
 }
 

@@ -68,6 +68,8 @@ void get_screen_size_( int * width, int * height );
 */
 #define get_screen_size(width,height) get_screen_size_( &(width), &(height) ) 
 
+char get_screen_char( int x, int y );
+
 /**
 *	Returns the current width of the screen.
 */

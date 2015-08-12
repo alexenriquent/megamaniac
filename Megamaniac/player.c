@@ -54,6 +54,14 @@ int get_lives() {
 	return lives;
 }
 
+void update_score(int points) {
+	score += points;
+}
+
+void update_lives() {
+	lives--;
+}
+
 bool is_alive() {
 	if (lives > 0) {
 		alive = true;
