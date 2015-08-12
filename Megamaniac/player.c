@@ -16,6 +16,8 @@ string bullet_img = ".";
 int score = 0;
 int lives = 3;
 
+bool shooting = false;
+
 void setup_player() {
 	int x_player = screen_width() / 2;
 	int y_player = screen_height() * 78 / 100;
@@ -46,16 +48,22 @@ bool update_player(int key) {
 		return true;
 	} 
 	if (key == 'S' || key == 's') {
-		shoot_bullet();
+		if (!shooting) {
+			shoot_bullet();
+			shooting = false;
+		}
 		return true;
 	}
+
 	return false;
 }
 
 void shoot_bullet() {
-	int key;
+	int key = get_char();
+	shooting = true;
 	sprite_id bullet = create_sprite((double)player->x, (double)player->y, 
 					SPRITE_WIDTH, SPRITE_HEIGHT, bullet_img);
+
 	while (bullet->y > 0) {
 		clear_screen();
 		update_player(key);
