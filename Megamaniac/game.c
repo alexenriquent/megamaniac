@@ -1,6 +1,10 @@
 #include "game.h"
 #include "player.h"
 
+#define UPDATE_SCREEN 1
+#define NORMAL_MODE 0
+#define GAME_OVER -1
+
 typedef char *string;
 
 string author = " Thanat Chokwijitkul (n9234900)";
@@ -11,11 +15,9 @@ char line = '-';
 
 void setup_game() {
 	setup_screen();
-
 	draw_screen();
 	setup_player();
 	draw_player();
-
 	show_screen();
 }
 
@@ -30,6 +32,31 @@ void draw_screen() {
 	draw_string(width * 85 / 100, height * 85 / 100, lives_str);
 	draw_int(width * 85 / 100 + strlen(lives_str), height * 85 / 100, get_lives());
 	draw_string((width / 2) - (strlen(level_1) / 2), height * 95 / 100, level_1);
+}
+
+int play_game() {
+	int key = get_char();
+
+	if (key == 'Q' || key == 'q') {
+		return GAME_OVER;
+	} else if ( key == 'R' || key == 'r') {
+		return NORMAL_MODE;
+	}
+	if (!is_alive()) {
+		return NORMAL_MODE;
+	}
+	if (update_player(key)) {
+		return UPDATE_SCREEN;
+	}
+	
+	return NORMAL_MODE;
+}
+
+void update_game() {
+	clear_screen();
+	draw_screen();
+	draw_player();
+	show_screen();
 }
 
 void cleanup_game() {

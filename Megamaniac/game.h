@@ -6,6 +6,8 @@
 
 void setup_game();
 void draw_screen();
+int play_game();
+void update_game();
 void cleanup_game();
 
 #endif 
