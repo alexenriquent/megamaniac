@@ -54,13 +54,15 @@ int play_game() {
 		if (!shooting) {
 			shoot_bullet();
 			shooting = false;
-		}
+		} 
 		return UPDATE_SCREEN;
 	}
 	if (!is_alive()) {
 		return NORMAL_MODE;
 	}
 	if (update_player(key)) {
+		return UPDATE_SCREEN;
+	} else if (update_aliens()) {
 		return UPDATE_SCREEN;
 	}
 	
@@ -78,6 +80,7 @@ void shoot_bullet() {
 	while (bullet->y > 0) {
 		clear_screen();
 		update_player(key);
+		update_aliens();
 		draw_screen();
 		draw_player();
 		draw_aliens();

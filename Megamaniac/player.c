@@ -46,6 +46,17 @@ bool update_player(int key) {
 	return false;
 }
 
+void reset_player() {
+	int x_player = screen_width() / 2;
+	int y_player = screen_height() * 78 / 100;
+
+	score = 0;
+	lives = 3;
+	alive = true;
+	player->x = x_player;
+	player->y = y_player;
+}
+
 int get_score() {
 	return score;
 }
@@ -69,17 +80,6 @@ bool is_alive() {
 		alive = false;
 	}
 	return alive;
-}
-
-void reset_player() {
-	int x_player = screen_width() / 2;
-	int y_player = screen_height() * 78 / 100;
-
-	score = 0;
-	lives = 3;
-	alive = true;
-	player->x = x_player;
-	player->y = y_player;
 }
 
 int x_pos() {
