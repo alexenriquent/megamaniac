@@ -18,5 +18,6 @@ int get_score();
 int get_lives();
 void update_lives();
 bool is_alive();
+void check_player_alive();
 
 #endif 

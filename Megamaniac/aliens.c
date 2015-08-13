@@ -171,7 +171,7 @@ void update_alien_bullets() {
 			bullets[i]->is_visible = false;
 			bullets[i]->x = ORIGIN;
 			bullets[i]->y = ORIGIN;
-		}
+		} 
 		bullets[i]->y += bullets[i]->dy;
 	}
 }

@@ -1,5 +1,6 @@
 #include "game.h"
 
+#define ORIGIN 0
 #define SPRITE_WIDTH 1
 #define SPRITE_HEIGHT 1
 #define UPDATE_SCREEN 1
@@ -9,11 +10,16 @@
 
 typedef char *string;
 
+sprite_id banner;
 string author = " Thanat Chokwijitkul (n9234900)";
 string level_1 = "Level: 1 - Basic";
 string score_str = "score: ";
 string lives_str = "lives: ";
 char line = '-';
+string banner_img = 
+"+-----------------------------------------------+"
+"|     Press 'q to quit or 'r' to try again!     |"
+"+-----------------------------------------------+";
 
 void setup_game() {
 	setup_screen();
@@ -21,6 +27,8 @@ void setup_game() {
 	setup_player();
 	setup_aliens();
 	draw_player();
+	draw_aliens();
+	setup_banner();
 	show_screen();
 }
 
@@ -44,9 +52,12 @@ int play_game() {
 	if (key == 'Q' || key == 'q') {
 		return GAME_OVER;
 	} else if ( key == 'R' || key == 'r') {
-		return RESET;
+		reset_game();
+		return NORMAL_MODE;
 	}
 	if (!is_alive()) {
+		draw_banner();
+		banner->is_visible = true;
 		return NORMAL_MODE;
 	}
 	if (update_player(key)) {
@@ -57,8 +68,27 @@ int play_game() {
 	if (shoot_alien_bullets()) {
 		return UPDATE_SCREEN;
 	} 
+
+	check_player_alive();
 	
 	return result;
+}
+
+void setup_banner() {
+	int width = screen_width();
+	int height = screen_height();
+	int banner_width = strlen(banner_img) / 3;
+	int banner_height = 3;
+
+	banner = create_sprite(ORIGIN, ORIGIN, banner_width, 
+			 banner_height, banner_img);
+	banner->x = (width - banner_width) / 2;
+	banner->y = (height - banner_height) / 2;
+	banner->is_visible = false;
+}
+
+void draw_banner() {
+	draw_sprite(banner);
 }
 
 void update_game() {
@@ -72,7 +102,6 @@ void update_game() {
 
 void reset_game() {
 	clear_screen();
-	reset_player();
 	draw_screen();
 	setup_player();
 	draw_player();

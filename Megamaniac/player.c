@@ -17,8 +17,8 @@ string alive_img = "$";
 string dead_img = "_";
 string bullet_img = "|";
 bool shooting = false;
-int score = 0;
-int lives = 3;
+int score = 3;
+int lives = 1;
 
 void setup_player() {
 	int x_player = screen_width() / 2;
@@ -27,6 +27,7 @@ void setup_player() {
 	alive = true;
 	player = create_sprite((double)x_player, (double)y_player, 
 			SPRITE_WIDTH, SPRITE_HEIGHT, alive_img);
+	reset_player();
 }
 
 void draw_player() {
@@ -118,10 +119,13 @@ void update_lives() {
 }
 
 bool is_alive() {
+	return alive;
+}
+
+void check_player_alive() {
 	if (lives > 0) {
 		alive = true;
 	} else {
 		alive = false;
 	}
-	return alive;
 }

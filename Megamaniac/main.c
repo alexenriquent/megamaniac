@@ -17,9 +17,7 @@ int main() {
 		mode = play_game();
 		if (mode == UPDATE_SCREEN) {
 			update_game();
-		} else if (mode == RESET) {
-			reset_game();
-		}
+		} 
 	}
 
 	cleanup_game();
