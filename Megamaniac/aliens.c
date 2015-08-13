@@ -141,7 +141,8 @@ void draw_alien_bullets() {
 }
 
 bool shoot_alien_bullets() {
-	if (!timer_expired(alien_bullet_timer)) {
+	if (!timer_expired(alien_bullet_timer) ||
+		alive_aliens_count() == 0) {
 		return false;
 	}
 
