@@ -4,13 +4,19 @@
 #define SPRITE_HEIGHT 1
 #define RIGHT 1
 #define LEFT -1
+#define INTERVAL 35
+#define SCORE_PER_ALIEN 30
+#define SCORE_PER_LEVEL 500
 
 typedef char *string;
 
 sprite_id player;
+sprite_id bullet;
 bool alive;
 string alive_img = "$";
 string dead_img = "_";
+string bullet_img = "|";
+bool shooting = false;
 int score = 0;
 int lives = 3;
 
@@ -43,7 +49,48 @@ bool update_player(int key) {
 		}
 		return true;
 	} 
+	if (key == 'S' || key == 's') {
+		if (!shooting) {
+			shoot_player_bullet();
+			shooting = false;
+		} 
+		return true;
+	}
+
 	return false;
+}
+
+void shoot_player_bullet() {
+	int key = get_char();
+	shooting = true;
+	bullet = create_sprite((double)player->x, (double)player->y, 
+					SPRITE_WIDTH, SPRITE_HEIGHT, bullet_img);
+
+	while (bullet->y > 0) {
+		clear_screen();
+		update_player(key);
+		update_aliens();
+		draw_screen();
+		draw_player();
+		draw_aliens();
+		update_player_bullet();
+		draw_sprite(bullet);
+		show_screen();
+		key = get_char();
+		timer_pause(INTERVAL);
+	}
+}
+
+void update_player_bullet() {
+	bullet->dy = -1;
+	bullet->y += bullet->dy;
+
+	if (get_screen_char(bullet->x, bullet->y) == '@') {
+		bullet->is_visible = false;
+		change_alien_status(bullet->x, bullet->y);
+		bullet->y = 0;
+		score += SCORE_PER_ALIEN;
+	}
 }
 
 void reset_player() {
@@ -65,10 +112,6 @@ int get_lives() {
 	return lives;
 }
 
-void update_score(int points) {
-	score += points;
-}
-
 void update_lives() {
 	lives--;
 }
@@ -80,14 +123,4 @@ bool is_alive() {
 		alive = false;
 	}
 	return alive;
-}
-
-int x_pos() {
-	int x = player->x;
-	return x;
-}
-
-int y_pos() {
-	int y = player->y;
-	return y;
 }
