@@ -73,6 +73,7 @@ void shoot_player_bullet() {
 		draw_screen();
 		draw_player();
 		draw_aliens();
+		draw_alien_bullets();
 		update_player_bullet();
 		draw_sprite(bullet);
 		show_screen();

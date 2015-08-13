@@ -16,11 +16,12 @@ bool update_aliens();
 void reset_aliens();
 void draw_aliens();
 void change_alien_status(int x, int y);
-bool alien_attack();
-void shoot_alien_bullet();
-void update_alien_bullet(sprite_id alien_bullet);
 int get_random_alien();
 int alive_aliens_count();
 bool alien_is_alive(int alien_num);
+void create_alien_bullets();
+void draw_alien_bullets();
+bool shoot_alien_bullets();
+void update_alien_bullets();
 
 #endif 

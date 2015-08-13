@@ -4,13 +4,14 @@
 #define SPRITE_WIDTH 1
 #define SPRITE_HEIGHT 1
 #define ALIEN_COUNT 10
-#define ALIEN_UPDATE_TIME 1000
+#define ALIEN_UPDATE_TIME 500
 #define ALIEN_BULLET_UPDATE_TIME 3000
-#define INTERVAL 500
+#define BULLET_COUNT 4
 
 typedef char *string;
 
 sprite_id aliens[ALIEN_COUNT];
+sprite_id bullets[BULLET_COUNT];
 timer_id alien_timer;
 timer_id alien_bullet_timer;
 string alien_img = "@";
@@ -28,6 +29,7 @@ void create_aliens() {
 		aliens[i] = create_sprite(ORIGIN, ORIGIN, 
 					SPRITE_WIDTH, SPRITE_HEIGHT, alien_img);
 	}
+	create_alien_bullets();
 	reset_aliens();
 }
 
@@ -46,6 +48,8 @@ bool update_aliens() {
 
 		alien->x += alien->dx;
 	}
+
+	update_alien_bullets();
 
 	return true;
 }
@@ -93,47 +97,6 @@ void change_alien_status(int x, int y) {
 	}
 }
 
-bool alien_attack() {
-	if (!timer_expired(alien_bullet_timer)) {
-		return false;
-	}
-	shoot_alien_bullet();
-	return true;
-}
-
-void shoot_alien_bullet() {
-	int key = get_char();
-	int random_alien = get_random_alien();
-	sprite_id alien_bullet = create_sprite((double)aliens[random_alien]->x, 
-					(double)aliens[random_alien]->y, SPRITE_WIDTH, 
-					SPRITE_HEIGHT, alien_bullet_img);
-
-	while (alien_bullet->y < screen_height() * 80 /100 - 1) {
-		clear_screen();
-		update_player(key);
-		update_aliens();
-		draw_screen();
-		draw_player();
-		draw_aliens();
-		update_alien_bullet(alien_bullet);
-		draw_sprite(alien_bullet);
-		show_screen();
-		key = get_char();
-		timer_pause(INTERVAL);
-	}
-}
-
-void update_alien_bullet(sprite_id alien_bullet) {
-	alien_bullet->dy = 1;
-	alien_bullet->y += alien_bullet->dy;
-
-	if (get_screen_char(alien_bullet->x, alien_bullet->y) == '$') {
-		alien_bullet->is_visible = false;
-		update_lives();
-		alien_bullet->y = screen_height() * 80 /100 - 1;
-	}
-}
-
 int get_random_alien() {
 	int random = rand() % 10;
 
@@ -160,4 +123,54 @@ bool alien_is_alive(int alien_num) {
 		return true;
 	}
 	return false;
+}
+
+void create_alien_bullets() {
+	for (int i = 0; i < BULLET_COUNT; i++) {
+		bullets[i] = create_sprite(ORIGIN, ORIGIN, 
+					SPRITE_WIDTH, SPRITE_HEIGHT, alien_bullet_img);
+		bullets[i]->dy = 1;
+		bullets[i]->is_visible = false;
+	}
+}
+
+void draw_alien_bullets() {
+	for (int i = 0; i < BULLET_COUNT; i++) {
+		draw_sprite(bullets[i]);
+	}
+}
+
+bool shoot_alien_bullets() {
+	if (!timer_expired(alien_bullet_timer)) {
+		return false;
+	}
+
+	int random_alien = get_random_alien();
+
+	for (int i = 0; i < BULLET_COUNT; i++) {
+		if (bullets[i]->is_visible == false) {
+			bullets[i]->x = aliens[random_alien]->x;
+			bullets[i]->y = aliens[random_alien]->y;
+			bullets[i]->is_visible = true;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void update_alien_bullets() {
+	for (int i = 0; i < BULLET_COUNT; i++) {
+		if (get_screen_char(bullets[i]->x, bullets[i]->y + 1) == '$') {
+			bullets[i]->is_visible = false;
+			bullets[i]->x = ORIGIN;
+			bullets[i]->y = ORIGIN;
+			update_lives();
+		} else if (bullets[i]->y >= screen_height() * 80 / 100 - 1) {
+			bullets[i]->is_visible = false;
+			bullets[i]->x = ORIGIN;
+			bullets[i]->y = ORIGIN;
+		}
+		bullets[i]->y += bullets[i]->dy;
+	}
 }

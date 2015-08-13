@@ -38,6 +38,7 @@ void draw_screen() {
 }
 
 int play_game() {
+	int result = NORMAL_MODE;
 	int key = get_char();
 
 	if (key == 'Q' || key == 'q') {
@@ -49,15 +50,15 @@ int play_game() {
 		return NORMAL_MODE;
 	}
 	if (update_player(key)) {
-		return UPDATE_SCREEN;
+		result = UPDATE_SCREEN;
 	} else if (update_aliens()) {
+		result = UPDATE_SCREEN;
+	} 
+	if (shoot_alien_bullets()) {
 		return UPDATE_SCREEN;
-	}
-	if (alien_attack()) {
-		return UPDATE_SCREEN;
-	}
+	} 
 	
-	return NORMAL_MODE;
+	return result;
 }
 
 void update_game() {
@@ -65,6 +66,7 @@ void update_game() {
 	draw_screen();	
 	draw_player();
 	draw_aliens();
+	draw_alien_bullets();
 	show_screen();
 }
 
