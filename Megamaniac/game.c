@@ -93,6 +93,11 @@ void update_game() {
 	draw_player();
 	draw_aliens();
 	draw_alien_bullets();
+
+	if (level == 5) {
+		draw_aggressive_alien();
+	}
+
 	show_screen();
 }
 

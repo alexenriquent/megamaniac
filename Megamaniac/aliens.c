@@ -19,11 +19,17 @@ timer_id alien_timer;
 timer_id alien_bullet_timer;
 timer_id aggressive_motion_timer;
 string alien_img = "@";
-string dead_alien_img = " ";
+string invisible_alien_img = " ";
 string alien_bullet_img = ".";
 int steps;
+int step_count;
 sprite_id aggressive_alien;
+int random_alien_number = -1;
 int moving_steps;
+bool parabolic_motion = false;
+bool bounce = false;
+int x_player;
+int y_player;
 
 void setup_aliens() {
 	create_aliens();
@@ -38,6 +44,11 @@ void create_aliens() {
 		aliens[i] = create_sprite(ORIGIN, ORIGIN, 
 					SPRITE_WIDTH, SPRITE_HEIGHT, alien_img);
 	}
+
+	if (get_level() == 5) {
+		create_aggressive_alien();
+	}
+
 	create_alien_bullets();
 	reset_aliens();
 }
@@ -137,13 +148,27 @@ bool update_aliens() {
 			alien->y += alien->dy;
 			alien_crash(alien);
 		}
+
+		if (parabolic_motion) {
+			if (moving()) {
+				move_alien();
+			}
+
+			if (!reach_edge()) {
+				update_agressive_motion();
+			} 
+
+			if (reach_edge())  {
+				aggressive_alien->is_visible = false;
+				aliens[random_alien_number]->bitmap = alien_img;
+				bounce = false;
+				random_alien_number = -1;
+				parabolic_motion = false;
+			}
+		}
 	}
 
 	update_alien_bullets();
-
-	if (moving()) {
-		move_alien();
-	}
 
 	return true;
 }
@@ -189,7 +214,7 @@ void reset_aliens() {
 		} else if (level == 5) {
 			aliens[i]->dx = 1;
 			aliens[i]->dy = 1;
-			// aggressive_motion_timer = create_timer(DELAY);
+			aggressive_motion_timer = create_timer(DELAY);
 		}
 		pattern_count = (pattern_count + 1) % 3;
 	}
@@ -208,6 +233,14 @@ void change_alien_status(int x, int y) {
 		if (aliens[i]->x == x && aliens[i]->y == y) {
 			aliens[i]->is_visible = false;
 		}
+	}
+
+	if (get_level() == 5 && aggressive_alien->x == x &&
+		aggressive_alien->y == y) {
+		aggressive_alien->is_visible = false;
+		aliens[random_alien_number]->is_visible = false;
+		parabolic_motion = false;
+		bounce = false;
 	}
 }
 
@@ -313,25 +346,67 @@ void random_motion(sprite_id alien) {
 bool aggressive_motion() {
 	if (!timer_expired(aggressive_motion_timer) ||
 		alive_aliens_count() == 0 ||
-		moving()) {
+		parabolic_motion) {
 		return false;
 	}
 
-	int random_alien = get_random_alien();
-	moving_steps = (rand() % 7) - 3;
-	aggressive_alien = aliens[random_alien];
+	random_alien_number = get_random_alien();
+	aggressive_alien->x = aliens[random_alien_number]->x;
+	aggressive_alien->y = aliens[random_alien_number]->y;
+	aggressive_alien->is_visible = true;
+	aliens[random_alien_number]->bitmap = invisible_alien_img;
+
+	moving_steps = rand() % (int)aggressive_alien->y;
+	parabolic_motion = true;
+	x_player = x_pos();
+	y_player = y_pos();
 
 	return true;
 }
 
+void create_aggressive_alien() {
+	aggressive_alien = create_sprite(ORIGIN,ORIGIN, 
+						SPRITE_WIDTH, SPRITE_HEIGHT, alien_img);
+	aggressive_alien->is_visible = false;
+}
+
+void draw_aggressive_alien() {
+	draw_sprite(aggressive_alien);
+}
+
 void move_alien() {
-	aggressive_alien->x += -1;
-	aggressive_alien->y += -1;
+	aggressive_alien->x += -2;
+	aggressive_alien->y += -2;
  	moving_steps = moving_steps - 1;
+
+ 	if (aggressive_alien->x > x_player) {
+ 		aggressive_alien->dx = -1;
+ 		aggressive_alien->dy = 1;
+ 	} else if (aggressive_alien->x < x_player) {
+ 		aggressive_alien->dx = 1;
+ 		aggressive_alien->dy = 1;
+ 	}
 }
 
 void update_agressive_motion() {
-
+	if (bounce) { 
+		aggressive_alien->x += aggressive_alien->dx;
+		aggressive_alien->y -= aggressive_alien->dy;
+	} else if (aggressive_alien->y == y_player) {
+		aggressive_alien->x += aggressive_alien->dx;
+		aggressive_alien->y += 0;
+		step_count++;
+		alien_crash(aggressive_alien);
+		if (aggressive_alien->x == x_player ||
+			step_count == 3) {
+			step_count = 0;
+			bounce = true;
+		}
+	} else {
+		aggressive_alien->x += aggressive_alien->dx;
+		aggressive_alien->y += aggressive_alien->dy;
+		alien_crash(aggressive_alien);
+	}
 }
 
 bool moving() {
@@ -339,6 +414,14 @@ bool moving() {
 		return true;
 	} 
 	return false;
+}
+
+bool reach_edge() {
+	int y = aggressive_alien->y;
+	if (y > 0) {
+		return false;
+	}
+	return true;
 }
 
 void cleanup_aliens() {

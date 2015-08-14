@@ -77,6 +77,11 @@ void shoot_player_bullet() {
 		draw_alien_bullets();
 		update_player_bullet();
 		draw_sprite(bullet);
+
+		if (get_level() == 5) {
+			draw_aggressive_alien();
+		}
+
 		show_screen();
 		key = get_char();
 		timer_pause(INTERVAL);
@@ -124,6 +129,16 @@ void reset_player_location() {
 		player->x = x_player;
 		player->y = random;
 	} 
+}
+
+int x_pos() {
+	int x = player->x;
+	return x;
+}
+
+int y_pos() {
+	int y = player->y;
+	return y;
 }
 
 int get_score() {
