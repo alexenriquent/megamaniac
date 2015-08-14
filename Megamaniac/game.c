@@ -16,7 +16,7 @@ string author = " Thanat Chokwijitkul (n9234900)";
 string score_str = "score: ";
 string lives_str = "lives: ";
 char line = '-';
-int level = 4;
+int level = 5;
 
 string levels[LEVEL_COUNT] = {
 		"Level 1 - Basic",
@@ -77,7 +77,10 @@ int play_game() {
 	} 
 	// if (shoot_alien_bullets()) {
 	// 	return UPDATE_SCREEN;
-	// } 
+	// }
+	if (aggressive_motion()) {
+		result = UPDATE_SCREEN;
+	} 
 
 	check_player_alive();
 	

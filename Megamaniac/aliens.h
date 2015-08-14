@@ -25,7 +25,10 @@ bool shoot_alien_bullets();
 void update_alien_bullets();
 void alien_crash(sprite_id alien);
 void random_motion(sprite_id alien);
-bool agressive_motion();
+bool aggressive_motion();
+void move_alien();
+void update_agressive_motion();
+bool moving();
 void cleanup_aliens();
 
 #endif 

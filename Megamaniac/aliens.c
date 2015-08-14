@@ -21,12 +21,16 @@ timer_id aggressive_motion_timer;
 string alien_img = "@";
 string dead_alien_img = " ";
 string alien_bullet_img = ".";
-int step;
+int steps;
+sprite_id aggressive_alien;
+int moving_steps;
 
 void setup_aliens() {
 	create_aliens();
 	alien_timer = create_timer(ALIEN_UPDATE_TIME);
 	alien_bullet_timer = create_timer(ALIEN_BULLET_UPDATE_TIME);
+
+	aggressive_motion_timer = create_timer(DELAY);
 }
 
 void create_aliens() {
@@ -64,17 +68,17 @@ bool update_aliens() {
 			if (x_next == screen_width()) {
 				alien->x = 0;
 			}
-			if (step == 1) {
+			if (steps == 1) {
 				alien->dy = 1;
-			} else if (step == 0 || step == 5) {
+			} else if (steps == 0 || steps == 5) {
 				alien->dy = 0;
-			} else if (step == 6) {
+			} else if (steps == 6) {
 				alien->dy = -1;
 			}
 			alien->x += alien->dx;
 			alien->y += alien->dy;
 		}
-		step = (step + 1) % HARMONIC_STEP;
+		steps = (steps + 1) % HARMONIC_STEP;
 	} else if (level == 3) {
 		for (int i = 0; i < ALIEN_COUNT; i++) {
 			sprite_id alien = aliens[i];
@@ -137,6 +141,10 @@ bool update_aliens() {
 
 	update_alien_bullets();
 
+	if (moving()) {
+		move_alien();
+	}
+
 	return true;
 }
 
@@ -170,7 +178,7 @@ void reset_aliens() {
 			aliens[i]->dx = 1;
 			aliens[i]->dy = 0;
 		} else if (level == 2) {
-			step = 0;
+			steps = 0;
 			aliens[i]->dx = 1;
 			aliens[i]->dy = 1;
 		} else if (level == 3) {
@@ -181,7 +189,7 @@ void reset_aliens() {
 		} else if (level == 5) {
 			aliens[i]->dx = 1;
 			aliens[i]->dy = 1;
-			aggressive_motion_timer = create_timer(DELAY);
+			// aggressive_motion_timer = create_timer(DELAY);
 		}
 		pattern_count = (pattern_count + 1) % 3;
 	}
@@ -302,12 +310,35 @@ void random_motion(sprite_id alien) {
 	} 
 }
 
-bool agressive_motion() {
+bool aggressive_motion() {
 	if (!timer_expired(aggressive_motion_timer) ||
-		alive_aliens_count() == 0) {
+		alive_aliens_count() == 0 ||
+		moving()) {
 		return false;
 	}
+
+	int random_alien = get_random_alien();
+	moving_steps = (rand() % 7) - 3;
+	aggressive_alien = aliens[random_alien];
+
 	return true;
+}
+
+void move_alien() {
+	aggressive_alien->x += -1;
+	aggressive_alien->y += -1;
+ 	moving_steps = moving_steps - 1;
+}
+
+void update_agressive_motion() {
+
+}
+
+bool moving() {
+	if (moving_steps != 0) {
+		return true;
+	} 
+	return false;
 }
 
 void cleanup_aliens() {
