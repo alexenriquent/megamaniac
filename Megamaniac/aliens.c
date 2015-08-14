@@ -41,8 +41,6 @@ bool update_aliens() {
 	}
 
 	int level = get_level();
-	// int width = screen_width();
-	// int height = screen_height();
 
 	if (level == 1) {
 		for (int i = 0; i < ALIEN_COUNT; i++) {
@@ -74,6 +72,22 @@ bool update_aliens() {
 			alien->y += alien->dy;
 		}
 		step = (step + 1) % HARMONIC_STEP;
+	} if (level == 3) {
+		for (int i = 0; i < ALIEN_COUNT; i++) {
+			sprite_id alien = aliens[i];
+			int x_next = (int) round(alien->x + alien->dx);
+			int y_next = (int) round(alien->y + alien->dy);
+
+			if (x_next == screen_width()) {
+				alien->x = 0;
+			}
+			if (y_next == screen_height() * 80 / 100) {
+				alien->y = 0;
+			}
+			alien->x += alien->dx;
+			alien->y += alien->dy;
+			alien_crash(alien);
+		}
 	}
 
 	update_alien_bullets();
@@ -117,6 +131,7 @@ void reset_aliens() {
 		} else if (level == 3) {
 			step = 0;
 			aliens[i]->dx = 1;
+			aliens[i]->dy = 1;
 		}
 		pattern_count = (pattern_count + 1) % 3;
 	}
@@ -215,6 +230,14 @@ void update_alien_bullets() {
 			bullets[i]->y = ORIGIN;
 		} 
 		bullets[i]->y += bullets[i]->dy;
+	}
+}
+
+void alien_crash(sprite_id alien) {
+	if (get_screen_char(alien->x, alien->y) == '$') {
+		change_alien_status(alien->x, alien->y);
+		update_lives();
+		reset_player_location();
 	}
 }
 

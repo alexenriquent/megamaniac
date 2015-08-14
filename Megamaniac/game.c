@@ -16,7 +16,7 @@ string author = " Thanat Chokwijitkul (n9234900)";
 string score_str = "score: ";
 string lives_str = "lives: ";
 char line = '-';
-int level = 2;
+int level = 3;
 
 string levels[LEVEL_COUNT] = {
 		"Level 1 - Basic",
@@ -27,7 +27,7 @@ string levels[LEVEL_COUNT] = {
 
 string banner_img = 
 "+-----------------------------------------------+"
-"|  			    GAME OVER!  				 |"
+"|                  GAME OVER!                   |"
 "|     Press 'q' to quit or 'r' to try again.    |"
 "+-----------------------------------------------+";
 
