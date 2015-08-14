@@ -1,6 +1,7 @@
 #ifndef __PLAYER__
 #define __PLAYER__
 
+#include <stdlib.h>
 #include <stdbool.h>
 #include "cab202_graphics.h"
 #include "cab202_sprites.h"

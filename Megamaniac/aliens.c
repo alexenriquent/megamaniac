@@ -53,7 +53,7 @@ bool update_aliens() {
 			alien->x += alien->dx;
 			alien->y += alien->dy;
 		}
-	} if (level == 2) {
+	} else if (level == 2) {
 		for (int i = 0; i < ALIEN_COUNT; i++) {
 			sprite_id alien = aliens[i];
 			int x_next = (int) round(alien->x + alien->dx);
@@ -72,7 +72,7 @@ bool update_aliens() {
 			alien->y += alien->dy;
 		}
 		step = (step + 1) % HARMONIC_STEP;
-	} if (level == 3) {
+	} else if (level == 3) {
 		for (int i = 0; i < ALIEN_COUNT; i++) {
 			sprite_id alien = aliens[i];
 			int x_next = (int) round(alien->x + alien->dx);
@@ -88,7 +88,32 @@ bool update_aliens() {
 			alien->y += alien->dy;
 			alien_crash(alien);
 		}
-	}
+	} else if (level == 4) {
+		for (int i = 0; i < ALIEN_COUNT; i++) {
+			sprite_id alien = aliens[i];
+			int x_next = (int) round(alien->x + alien->dx);
+			int y_next = (int) round(alien->y + alien->dy);
+
+			if (x_next >= screen_width()) {
+				alien->x = 0;
+			}
+			if (x_next <= 0) {
+				alien->x = screen_width() - 1;
+			}
+			if (y_next == screen_height() * 80 / 100) {
+				alien->y = 0;
+			}
+			random_motion(alien);
+			alien->x += alien->dx;
+			if (get_screen_char(alien->x + alien->dx, alien->y) == '@' ||
+				get_screen_char(alien->x + alien->dx + 1, alien->y) == '@' ||
+				get_screen_char(alien->x + alien->dx + 2, alien->y) == '@') {
+				alien->dx = -alien->dx;
+				alien->x += alien->dx;
+			}
+			alien->y += alien->dy;
+		}
+	} 
 
 	update_alien_bullets();
 
@@ -129,8 +154,9 @@ void reset_aliens() {
 			aliens[i]->dx = 1;
 			aliens[i]->dy = 1;
 		} else if (level == 3) {
-			step = 0;
 			aliens[i]->dx = 1;
+			aliens[i]->dy = 1;
+		} else if (level == 4) {
 			aliens[i]->dy = 1;
 		}
 		pattern_count = (pattern_count + 1) % 3;
@@ -239,6 +265,16 @@ void alien_crash(sprite_id alien) {
 		update_lives();
 		reset_player_location();
 	}
+}
+
+void random_motion(sprite_id alien) {
+	int motion = rand() % 2;
+
+	if (motion == 0) {
+		alien->dx = -1;
+	} else if (motion == 1) {
+		alien->dx = 1;
+	} 
 }
 
 void cleanup_aliens() {

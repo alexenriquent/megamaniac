@@ -24,6 +24,7 @@ void draw_alien_bullets();
 bool shoot_alien_bullets();
 void update_alien_bullets();
 void alien_crash(sprite_id alien);
+void random_motion(sprite_id alien);
 void cleanup_aliens();
 
 #endif 

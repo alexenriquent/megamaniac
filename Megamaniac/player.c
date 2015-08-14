@@ -118,6 +118,12 @@ void reset_player_location() {
 
 	player->x = x_player;
 	player->y = y_player;
+	
+	while (get_screen_char(player->x, player->y) == '@') {
+		int random = rand() % screen_width();
+		player->x = x_player;
+		player->y = random;
+	} 
 }
 
 int get_score() {
