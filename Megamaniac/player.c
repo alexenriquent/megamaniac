@@ -94,6 +94,7 @@ void update_player_bullet() {
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
+			level_up();
 			reset_aliens();
 		}
 	}
@@ -107,6 +108,14 @@ void reset_player() {
 	lives = 3;
 	alive = true;
 	player->is_visible = true;
+	player->x = x_player;
+	player->y = y_player;
+}
+
+void reset_player_location() {
+	int x_player = screen_width() / 2;
+	int y_player = screen_height() * 78 / 100;
+
 	player->x = x_player;
 	player->y = y_player;
 }

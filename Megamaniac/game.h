@@ -13,6 +13,8 @@ void draw_screen();
 int play_game();
 void update_game();
 void reset_game();
+int get_level();
+void level_up();
 void setup_banner();
 void draw_banner();
 void display_banner();

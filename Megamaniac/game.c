@@ -7,18 +7,28 @@
 #define NORMAL_MODE 0
 #define GAME_OVER -1
 #define RESET -2
+#define LEVEL_COUNT 5
 
 typedef char *string;
 
 sprite_id banner;
 string author = " Thanat Chokwijitkul (n9234900)";
-string level_1 = "Level: 1 - Basic";
 string score_str = "score: ";
 string lives_str = "lives: ";
 char line = '-';
+int level = 2;
+
+string levels[LEVEL_COUNT] = {
+		"Level 1 - Basic",
+		"Level 2 - Harmonic",
+		"Level 3 - Falling",
+		"Level 4 - Drunken",
+		"Level 5 - Aggressive"};
+
 string banner_img = 
 "+-----------------------------------------------+"
-"|     Press 'q to quit or 'r' to try again!     |"
+"|  			    GAME OVER!  				 |"
+"|     Press 'q' to quit or 'r' to try again.    |"
 "+-----------------------------------------------+";
 
 void setup_game() {
@@ -42,7 +52,8 @@ void draw_screen() {
 	draw_int(width * 70 / 100 + strlen(score_str), height * 85 / 100, get_score());
 	draw_string(width * 85 / 100, height * 85 / 100, lives_str);
 	draw_int(width * 85 / 100 + strlen(lives_str), height * 85 / 100, get_lives());
-	draw_string((width / 2) - (strlen(level_1) / 2), height * 95 / 100, level_1);
+	draw_string((width / 2) - (strlen(levels[get_level() - 1]) / 2), 
+				height * 95 / 100, levels[get_level() - 1]);
 }
 
 int play_game() {
@@ -92,11 +103,19 @@ void reset_game() {
 	show_screen();
 }
 
+int get_level() {
+	return level;
+}
+
+void level_up() {
+	level++;
+}
+
 void setup_banner() {
 	int width = screen_width();
 	int height = screen_height();
-	int banner_width = strlen(banner_img) / 3;
-	int banner_height = 3;
+	int banner_width = strlen(banner_img) / 4;
+	int banner_height = 4;
 
 	banner = create_sprite(ORIGIN, ORIGIN, banner_width, 
 			 banner_height, banner_img);

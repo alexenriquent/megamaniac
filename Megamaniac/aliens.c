@@ -7,6 +7,7 @@
 #define ALIEN_UPDATE_TIME 500
 #define ALIEN_BULLET_UPDATE_TIME 3000
 #define BULLET_COUNT 4
+#define HARMONIC_STEP 10
 
 typedef char *string;
 
@@ -17,6 +18,7 @@ timer_id alien_bullet_timer;
 string alien_img = "@";
 string dead_alien_img = " ";
 string alien_bullet_img = ".";
+int step;
 
 void setup_aliens() {
 	create_aliens();
@@ -38,15 +40,40 @@ bool update_aliens() {
 		return false;
 	}
 
-	for (int i = 0; i < ALIEN_COUNT; i++) {
-		sprite_id alien = aliens[i];
-		int x_next = (int) round(alien->x + alien->dx);
+	int level = get_level();
+	// int width = screen_width();
+	// int height = screen_height();
 
-		if (x_next == screen_width()) {
-			alien->x = 0;
+	if (level == 1) {
+		for (int i = 0; i < ALIEN_COUNT; i++) {
+			sprite_id alien = aliens[i];
+			int x_next = (int) round(alien->x + alien->dx);
+
+			if (x_next == screen_width()) {
+				alien->x = 0;
+			}
+			alien->x += alien->dx;
+			alien->y += alien->dy;
 		}
+	} if (level == 2) {
+		for (int i = 0; i < ALIEN_COUNT; i++) {
+			sprite_id alien = aliens[i];
+			int x_next = (int) round(alien->x + alien->dx);
 
-		alien->x += alien->dx;
+			if (x_next == screen_width()) {
+				alien->x = 0;
+			}
+			if (step == 1) {
+				alien->dy = 1;
+			} else if (step == 0 || step == 5) {
+				alien->dy = 0;
+			} else if (step == 6) {
+				alien->dy = -1;
+			}
+			alien->x += alien->dx;
+			alien->y += alien->dy;
+		}
+		step = (step + 1) % HARMONIC_STEP;
 	}
 
 	update_alien_bullets();
@@ -60,6 +87,7 @@ void reset_aliens() {
 	int x_even = 0;
 	int y_even = screen_height() * 10 / 100;
 	int pattern_count = 0;
+	int level = get_level();
 
 	for (int i = 0; i < ALIEN_COUNT; i++) {
 		if (pattern_count == 0) {
@@ -79,7 +107,17 @@ void reset_aliens() {
 			x_odd += screen_width() * 10 / 100;
 			y_odd -= screen_height() * 10 / 100;
 		}
-		aliens[i]->dx = 1;
+		if (level == 1) {
+			aliens[i]->dx = 1;
+			aliens[i]->dy = 0;
+		} else if (level == 2) {
+			step = 0;
+			aliens[i]->dx = 1;
+			aliens[i]->dy = 1;
+		} else if (level == 3) {
+			step = 0;
+			aliens[i]->dx = 1;
+		}
 		pattern_count = (pattern_count + 1) % 3;
 	}
 	draw_aliens();
@@ -170,6 +208,7 @@ void update_alien_bullets() {
 			bullets[i]->x = ORIGIN;
 			bullets[i]->y = ORIGIN;
 			update_lives();
+			reset_player_location();
 		} else if (bullets[i]->y >= screen_height() * 80 / 100 - 1) {
 			bullets[i]->is_visible = false;
 			bullets[i]->x = ORIGIN;

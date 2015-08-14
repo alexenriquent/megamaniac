@@ -14,6 +14,7 @@ bool update_player(int key);
 void shoot_player_bullet();
 void update_player_bullet();
 void reset_player();
+void reset_player_location();
 int get_score();
 int get_lives();
 void update_lives();
