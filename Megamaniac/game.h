@@ -11,10 +11,11 @@
 void setup_game();
 void draw_screen();
 int play_game();
-void setup_banner();
-void draw_banner();
 void update_game();
 void reset_game();
+void setup_banner();
+void draw_banner();
+void display_banner();
 void cleanup_game();
 
 #endif 

@@ -23,5 +23,6 @@ void create_alien_bullets();
 void draw_alien_bullets();
 bool shoot_alien_bullets();
 void update_alien_bullets();
+void cleanup_aliens();
 
 #endif 

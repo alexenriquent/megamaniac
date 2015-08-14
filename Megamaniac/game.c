@@ -56,8 +56,7 @@ int play_game() {
 		return NORMAL_MODE;
 	}
 	if (!is_alive()) {
-		draw_banner();
-		banner->is_visible = true;
+		display_banner();
 		return NORMAL_MODE;
 	}
 	if (update_player(key)) {
@@ -72,23 +71,6 @@ int play_game() {
 	check_player_alive();
 	
 	return result;
-}
-
-void setup_banner() {
-	int width = screen_width();
-	int height = screen_height();
-	int banner_width = strlen(banner_img) / 3;
-	int banner_height = 3;
-
-	banner = create_sprite(ORIGIN, ORIGIN, banner_width, 
-			 banner_height, banner_img);
-	banner->x = (width - banner_width) / 2;
-	banner->y = (height - banner_height) / 2;
-	banner->is_visible = false;
-}
-
-void draw_banner() {
-	draw_sprite(banner);
 }
 
 void update_game() {
@@ -110,6 +92,35 @@ void reset_game() {
 	show_screen();
 }
 
+void setup_banner() {
+	int width = screen_width();
+	int height = screen_height();
+	int banner_width = strlen(banner_img) / 3;
+	int banner_height = 3;
+
+	banner = create_sprite(ORIGIN, ORIGIN, banner_width, 
+			 banner_height, banner_img);
+	banner->x = (width - banner_width) / 2;
+	banner->y = (height - banner_height) / 2;
+	banner->is_visible = false;
+}
+
+void draw_banner() {
+	draw_sprite(banner);
+	banner->is_visible = true;
+}
+
+void display_banner() {
+	change_player_status();
+	clear_screen();
+	draw_screen();	
+	draw_player();
+	draw_aliens();
+	draw_banner();
+}
+
 void cleanup_game() {
+	cleanup_player();
+	cleanup_aliens();
 	cleanup_screen();
 }

@@ -65,14 +65,17 @@ void reset_aliens() {
 		if (pattern_count == 0) {
 			aliens[i]->x = x_even;
 			aliens[i]->y = y_even;
+			aliens[i]->is_visible = true;
 			x_even += screen_width() * 10 / 100;
 		} else if (pattern_count == 1) {
 			aliens[i]->x = x_odd;
 			aliens[i]->y = y_odd;
+			aliens[i]->is_visible = true;
 			y_odd += screen_height() * 10 / 100;
 		} else if (pattern_count == 2) {
 			aliens[i]->x = x_odd;
 			aliens[i]->y = y_odd;
+			aliens[i]->is_visible = true;
 			x_odd += screen_width() * 10 / 100;
 			y_odd -= screen_height() * 10 / 100;
 		}
@@ -173,5 +176,11 @@ void update_alien_bullets() {
 			bullets[i]->y = ORIGIN;
 		} 
 		bullets[i]->y += bullets[i]->dy;
+	}
+}
+
+void cleanup_aliens() {
+	for (int i = 0; i < ALIEN_COUNT; i++) {
+		destroy_sprite(aliens[i]);
 	}
 }

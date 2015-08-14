@@ -19,5 +19,7 @@ int get_lives();
 void update_lives();
 bool is_alive();
 void check_player_alive();
+void change_player_status();
+void cleanup_player();
 
 #endif 

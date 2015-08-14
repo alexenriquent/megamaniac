@@ -92,6 +92,10 @@ void update_player_bullet() {
 		change_alien_status(bullet->x, bullet->y);
 		bullet->y = 0;
 		score += SCORE_PER_ALIEN;
+		if (alive_aliens_count() == 0) {
+			score += SCORE_PER_LEVEL;
+			reset_aliens();
+		}
 	}
 }
 
@@ -102,6 +106,7 @@ void reset_player() {
 	score = 0;
 	lives = 3;
 	alive = true;
+	player->is_visible = true;
 	player->x = x_player;
 	player->y = y_player;
 }
@@ -128,4 +133,12 @@ void check_player_alive() {
 	} else {
 		alive = false;
 	}
+}
+
+void change_player_status() {
+	player->is_visible = false;
+}
+
+void cleanup_player() {
+	destroy_sprite(player);
 }
