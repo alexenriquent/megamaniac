@@ -13,21 +13,22 @@ typedef char *string;
 sprite_id player;
 sprite_id bullet;
 sprite_id curved_bullet;
-bool alive;
 string alive_img = "$";
 string dead_img = "_";
 string bullet_img = "|";
-bool shooting = false;
-int score = 3;
-int lives = 1;
+int score;
+int lives;
 int key_hold;
+bool alive;
+bool shooting = false;
 bool holding = false;
 
 void setup_player() {
 	int x_player = screen_width() / 2;
 	int y_player = screen_height() * 78 / 100;
 
-	alive = true;
+	score = 0;
+	lives = 3;
 	player = create_sprite((double)x_player, (double)y_player, 
 			SPRITE_WIDTH, SPRITE_HEIGHT, alive_img);
 	reset_player();
@@ -92,13 +93,13 @@ void shoot_player_bullet() {
 		draw_player();
 		draw_aliens();
 		draw_alien_bullets();
-		update_player_bullet();
-		draw_sprite(bullet);
 
 		if (get_level() == 5) {
 			draw_aggressive_alien();
 		}
 
+		update_player_bullet();
+		draw_sprite(bullet);
 		show_screen();
 		key = get_char();
 		timer_pause(INTERVAL);
@@ -116,7 +117,6 @@ void update_player_bullet() {
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
 			level_up();
-			reset_aliens();
 		}
 	}
 
@@ -127,11 +127,9 @@ void update_player_bullet() {
 			change_alien_status(bullet->x, bullet->y);
 			bullet->y = 0;
 			score += SCORE_PER_ALIEN;
-			attack_aggressive_alien();
 			if (alive_aliens_count() == 0) {
 				score += SCORE_PER_LEVEL;
 				level_up();
-				reset_aliens();
 			}
 		}
 	}
@@ -179,7 +177,6 @@ void update_left_curved_bullet() {
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
 			level_up();
-			reset_aliens();
 		}
 	}
 }
@@ -225,7 +222,6 @@ void update_right_curved_bullet() {
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
 			level_up();
-			reset_aliens();
 		}
 	}
 }
@@ -234,8 +230,6 @@ void reset_player() {
 	int x_player = screen_width() / 2;
 	int y_player = screen_height() * 78 / 100;
 
-	score = 0;
-	lives = 3;
 	alive = true;
 	player->is_visible = true;
 	player->x = x_player;
@@ -278,6 +272,13 @@ void update_lives() {
 	lives--;
 }
 
+bool conquer() {
+	if (alive_aliens_count() == 0) {
+		return true;
+	}
+	return false;
+}
+
 bool is_alive() {
 	return alive;
 }
@@ -296,4 +297,8 @@ void change_player_status() {
 
 void cleanup_player() {
 	destroy_sprite(player);
+}
+
+void cleanup_player_bullet() {
+	destroy_sprite(bullet);
 }

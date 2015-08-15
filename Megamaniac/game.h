@@ -15,9 +15,12 @@ void update_game();
 void reset_game();
 int get_level();
 void level_up();
-void setup_banner();
-void draw_banner();
-void display_banner();
+void setup_levelup_banner();
+void draw_levelup_banner();
+void display_levelup_banner();
+void setup_gameover_banner();
+void draw_gameover_banner();
+void display_gameover_banner();
 void cleanup_game();
 
 #endif 

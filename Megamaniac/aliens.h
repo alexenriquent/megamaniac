@@ -23,6 +23,7 @@ void create_alien_bullets();
 void draw_alien_bullets();
 bool shoot_alien_bullets();
 void update_alien_bullets();
+void reset_aliens_bullets();
 void alien_crash(sprite_id alien);
 void random_motion(sprite_id alien);
 bool aggressive_motion();
@@ -30,11 +31,12 @@ void create_aggressive_alien();
 void draw_aggressive_alien();
 int aggressive_alien_x_pos();
 int aggressive_alien_y_pos();
-void attack_aggressive_alien();
 void move_alien();
 void update_agressive_motion();
+bool collide();
 bool moving();
 bool reach_edge();
 void cleanup_aliens();
+void cleanup_alien_bullets();
 
 #endif 

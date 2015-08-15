@@ -15,6 +15,7 @@ typedef char *string;
 
 sprite_id aliens[ALIEN_COUNT];
 sprite_id bullets[BULLET_COUNT];
+sprite_id aggressive_alien;
 timer_id alien_timer;
 timer_id alien_bullet_timer;
 timer_id aggressive_motion_timer;
@@ -23,8 +24,7 @@ string invisible_alien_img = " ";
 string alien_bullet_img = ".";
 int steps;
 int step_count;
-sprite_id aggressive_alien;
-int random_alien_number = -1;
+int random_alien_number;
 int moving_steps;
 bool parabolic_motion = false;
 bool bounce = false;
@@ -33,8 +33,10 @@ int y_player;
 
 void setup_aliens() {
 	create_aliens();
+	create_aggressive_alien();
 	alien_timer = create_timer(ALIEN_UPDATE_TIME);
 	alien_bullet_timer = create_timer(ALIEN_BULLET_UPDATE_TIME);
+	aggressive_motion_timer = create_timer(DELAY);
 }
 
 void create_aliens() {
@@ -115,7 +117,7 @@ bool update_aliens() {
 			if (y_next == screen_height() * 80 / 100) {
 				alien->y = 0;
 			}
-			random_motion(alien);
+			//random_motion(alien);
 			alien->x += alien->dx;
 			if (get_screen_char(alien->x + alien->dx, alien->y) == '@' ||
 				get_screen_char(alien->x + alien->dx + 1, alien->y) == '@') {
@@ -149,16 +151,18 @@ bool update_aliens() {
 
 			if (!reach_edge()) {
 				update_agressive_motion();
+				if (collide()) {
+					aliens[random_alien_number]->is_visible = false;
+				}
 			} 
 
 			if (reach_edge())  {
 				aggressive_alien->is_visible = false;
 				aggressive_alien->x = ORIGIN;
 				aggressive_alien->y = ORIGIN;
-				aliens[random_alien_number]->bitmap = alien_img;
 				aliens[random_alien_number]->is_visible = true;
 				bounce = false;
-				random_alien_number = -1;
+				// random_alien_number = -1;
 				parabolic_motion = false;
 			}
 		}
@@ -210,19 +214,22 @@ void reset_aliens() {
 		} else if (level == 5) {
 			aliens[i]->dx = 1;
 			aliens[i]->dy = 1;
-			create_aggressive_alien();
-			aggressive_motion_timer = create_timer(DELAY);
 		}
 		pattern_count = (pattern_count + 1) % 3;
 	}
 
+	create_aggressive_alien();
+	aggressive_motion_timer = create_timer(DELAY);
+
 	if (get_level() == 5) {
+		// create_aggressive_alien();
 		draw_aggressive_alien();
+		// aggressive_motion_timer = create_timer(DELAY);
 	}
 
 	draw_aliens();
+	reset_aliens_bullets();
 }
-
 
 void draw_aliens() {
 	for (int i = 0; i < ALIEN_COUNT; i++) {
@@ -239,8 +246,11 @@ void change_alien_status(int x, int y) {
 
 	if (get_level() == 5 && aggressive_alien->x == x &&
 		aggressive_alien->y == y) {
+		aggressive_alien->x = ORIGIN;
+		aggressive_alien->y = ORIGIN;
 		aggressive_alien->is_visible = false;
 		aliens[random_alien_number]->is_visible = false;
+		// random_alien_number = -1;
 		parabolic_motion = false;
 		bounce = false;
 	}
@@ -253,6 +263,7 @@ int get_random_alien() {
 			alive_aliens_count() != 0) {
 		random = rand() % 10;
 	}
+
 	return random;
 }
 
@@ -260,10 +271,31 @@ int alive_aliens_count() {
 	int count = 0;
 
 	for (int i = 0; i < ALIEN_COUNT; i++) {
+		if (aliens[i]->bitmap == invisible_alien_img) {
+			aliens[i]->bitmap = alien_img;
+			aliens[i]->is_visible = false;
+		}
+	}
+
+	for (int i = 0; i < ALIEN_COUNT; i++) {
 		if (alien_is_alive(i)) {
 			count++;
 		}
 	}
+
+	if (get_level() == 5) {
+		if (parabolic_motion && count == 0) {
+			count = 1;
+			aggressive_alien->is_visible = false;
+			aggressive_alien->x = ORIGIN;
+			aggressive_alien->y = ORIGIN;
+			aliens[random_alien_number]->is_visible = true;
+			bounce = false;
+			// random_alien_number = -1;
+			parabolic_motion = false;
+		}
+	}
+
 	return count;
 }
 
@@ -300,7 +332,7 @@ bool shoot_alien_bullets() {
 	for (int i = 0; i < BULLET_COUNT; i++) {
 		if (bullets[i]->is_visible == false) {
 			bullets[i]->x = aliens[random_alien]->x;
-			bullets[i]->y = aliens[random_alien]->y;
+			bullets[i]->y = aliens[random_alien]->y + 1;
 			bullets[i]->is_visible = true;
 			return true;
 		}
@@ -326,9 +358,17 @@ void update_alien_bullets() {
 	}
 }
 
+void reset_aliens_bullets() {
+	for (int i = 0; i < BULLET_COUNT; i++) {
+		bullets[i]->is_visible = false;
+		bullets[i]->x = ORIGIN;
+		bullets[i]->y = ORIGIN;
+	}
+}
+
 void alien_crash(sprite_id alien) {
 	bool alive = alien->is_visible;
-	if (alive && alien->bitmap == alien_img) {
+	if (alive) {
 		if (get_screen_char(alien->x, alien->y) == '$') {
 			change_alien_status(alien->x, alien->y);
 			update_lives();
@@ -350,7 +390,7 @@ void random_motion(sprite_id alien) {
 
 bool aggressive_motion() {
 	if (!timer_expired(aggressive_motion_timer) ||
-		alive_aliens_count() == 0 ||
+		alive_aliens_count() <= 1 ||
 		parabolic_motion) {
 		return false;
 	}
@@ -359,7 +399,6 @@ bool aggressive_motion() {
 	aggressive_alien->x = aliens[random_alien_number]->x;
 	aggressive_alien->y = aliens[random_alien_number]->y;
 	aggressive_alien->is_visible = true;
-	aliens[random_alien_number]->bitmap = invisible_alien_img;
 	aliens[random_alien_number]->is_visible = false;
 	parabolic_motion = true;
 	x_player = x_pos();
@@ -383,7 +422,7 @@ bool aggressive_motion() {
 }
 
 void create_aggressive_alien() {
-	aggressive_alien = create_sprite(ORIGIN,ORIGIN, 
+	aggressive_alien = create_sprite(ORIGIN, ORIGIN, 
 						SPRITE_WIDTH, SPRITE_HEIGHT, alien_img);
 	aggressive_alien->is_visible = false;
 }
@@ -401,16 +440,6 @@ int aggressive_alien_x_pos() {
 int aggressive_alien_y_pos() {
 	int y = aggressive_alien->y;
 	return y;
-}
-
-void attack_aggressive_alien() {
-	aggressive_alien->x = ORIGIN;
-	aggressive_alien->y = ORIGIN;
-	aliens[random_alien_number]->bitmap = alien_img;
-	aliens[random_alien_number]->is_visible = false;
-	bounce = false;
-	random_alien_number = -1;
-	parabolic_motion = false;
 }
 
 void move_alien() {
@@ -438,17 +467,42 @@ void update_agressive_motion() {
 		aggressive_alien->x += aggressive_alien->dx;
 		aggressive_alien->y += 0;
 		step_count++;
-		alien_crash(aggressive_alien);
-		if (/*aggressive_alien->x == x_player ||*/
-			step_count == 3) {
+		if (get_screen_char(aggressive_alien->x, aggressive_alien->y) == '$') {
+			aggressive_alien->x = ORIGIN;
+			aggressive_alien->y = ORIGIN;
+			aggressive_alien->is_visible = false;
+			aliens[random_alien_number]->bitmap = invisible_alien_img;
+			parabolic_motion = false;
+			update_lives();
+			reset_player_location();
+		}
+		if (step_count == 3) {
 			step_count = 0;
 			bounce = true;
 		}
 	} else {
 		aggressive_alien->x += aggressive_alien->dx;
 		aggressive_alien->y += aggressive_alien->dy;
-		alien_crash(aggressive_alien);
+		if (get_screen_char(aggressive_alien->x, 
+			aggressive_alien->y) == '$') {
+			aggressive_alien->x = ORIGIN;
+			aggressive_alien->y = ORIGIN;
+			aggressive_alien->is_visible = false;
+			aliens[random_alien_number]->bitmap = invisible_alien_img;
+			bounce = false;
+			parabolic_motion = false;
+			update_lives();
+			reset_player_location();
+		}
 	}
+}
+
+bool collide() {
+	if (get_screen_char(aggressive_alien->x, 
+		aggressive_alien->y) == '$') {
+		return true;
+	}
+	return false;
 }
 
 bool moving() {
@@ -471,5 +525,11 @@ bool reach_edge() {
 void cleanup_aliens() {
 	for (int i = 0; i < ALIEN_COUNT; i++) {
 		destroy_sprite(aliens[i]);
+	}
+}
+
+void cleanup_alien_bullets() {
+	for (int i = 0; i < BULLET_COUNT; i++) {
+		destroy_sprite(bullets[i]);
 	}
 }

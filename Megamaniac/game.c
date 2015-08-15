@@ -8,16 +8,18 @@
 #define GAME_OVER -1
 #define RESET -2
 #define LEVEL_COUNT 5
+#define FIRST_LEVEL 1
 #define FINAL_LEVEL 5
 
 typedef char *string;
 
-sprite_id banner;
 string author = " Thanat Chokwijitkul (n9234900)";
 string score_str = "score: ";
 string lives_str = "lives: ";
+sprite_id gameover_banner;
+sprite_id levelup_banner;
 char line = '-';
-int level = 5;
+int level = 4;
 
 string levels[LEVEL_COUNT] = {
 		"Level 1 - Basic",
@@ -26,10 +28,17 @@ string levels[LEVEL_COUNT] = {
 		"Level 4 - Drunken",
 		"Level 5 - Aggressive"};
 
-string banner_img = 
+string gameover_banner_img = 
 "+-----------------------------------------------+"
 "|                  GAME OVER!                   |"
 "|     Press 'q' to quit or 'r' to try again.    |"
+"+-----------------------------------------------+";
+
+string levelup_banner_img = 
+"+-----------------------------------------------+"
+"|                  LEVEL UP!                    |"
+"|    Press 'l' to process to the next level.    |"
+"|     Press 'q' to quit or 'r' to restart.      |"
 "+-----------------------------------------------+";
 
 void setup_game() {
@@ -39,7 +48,8 @@ void setup_game() {
 	setup_aliens();
 	draw_player();
 	draw_aliens();
-	setup_banner();
+	setup_levelup_banner();
+	setup_gameover_banner();
 	show_screen();
 }
 
@@ -63,12 +73,20 @@ int play_game() {
 
 	if (key == 'Q' || key == 'q') {
 		return GAME_OVER;
-	} else if ( key == 'R' || key == 'r') {
+	} else if (key == 'R' || key == 'r') {
 		reset_game();
+		return NORMAL_MODE;
+	} else if (key == 'L' || key == 'l') {
+		reset_player();
+		reset_aliens();
+		result = UPDATE_SCREEN;
+	}
+	if (conquer()) {
+		display_levelup_banner();
 		return NORMAL_MODE;
 	}
 	if (!is_alive()) {
-		display_banner();
+		display_gameover_banner();
 		return NORMAL_MODE;
 	}
 	if (update_player(key)) {
@@ -77,7 +95,7 @@ int play_game() {
 		result = UPDATE_SCREEN;
 	} 
 	if (shoot_alien_bullets()) {
-		return UPDATE_SCREEN;
+		result = UPDATE_SCREEN;
 	}
 	if (level == FINAL_LEVEL) {
 		if (aggressive_motion()) {
@@ -105,6 +123,8 @@ void update_game() {
 }
 
 void reset_game() {
+	level = FIRST_LEVEL;
+
 	clear_screen();
 	draw_screen();
 	setup_player();
@@ -126,35 +146,64 @@ void level_up() {
 	}
 }
 
-void setup_banner() {
+void setup_levelup_banner() {
 	int width = screen_width();
 	int height = screen_height();
-	int banner_width = strlen(banner_img) / 4;
-	int banner_height = 4;
+	int banner_width = strlen(levelup_banner_img) / 5;
+	int banner_height = 5;
 
-	banner = create_sprite(ORIGIN, ORIGIN, banner_width, 
-			 banner_height, banner_img);
-	banner->x = (width - banner_width) / 2;
-	banner->y = (height - banner_height) / 2;
-	banner->is_visible = false;
+	levelup_banner = create_sprite(ORIGIN, ORIGIN, banner_width, 
+			 banner_height, levelup_banner_img);
+	levelup_banner->x = (width - banner_width) / 2;
+	levelup_banner->y = (height - banner_height) / 2;
+	levelup_banner->is_visible = false;
 }
 
-void draw_banner() {
-	draw_sprite(banner);
-	banner->is_visible = true;
+void draw_levelup_banner() {
+	draw_sprite(levelup_banner);
+	levelup_banner->is_visible = true;
 }
 
-void display_banner() {
+void display_levelup_banner() {
 	change_player_status();
 	clear_screen();
 	draw_screen();	
 	draw_player();
 	draw_aliens();
-	draw_banner();
+	draw_levelup_banner();
+}
+
+void setup_gameover_banner() {
+	int width = screen_width();
+	int height = screen_height();
+	int banner_width = strlen(gameover_banner_img) / 4;
+	int banner_height = 4;
+
+	gameover_banner = create_sprite(ORIGIN, ORIGIN, banner_width, 
+			 banner_height, gameover_banner_img);
+	gameover_banner->x = (width - banner_width) / 2;
+	gameover_banner->y = (height - banner_height) / 2;
+	gameover_banner->is_visible = false;
+}
+
+void draw_gameover_banner() {
+	draw_sprite(gameover_banner);
+	gameover_banner->is_visible = true;
+}
+
+void display_gameover_banner() {
+	change_player_status();
+	clear_screen();
+	draw_screen();	
+	draw_player();
+	draw_aliens();
+	draw_gameover_banner();
 }
 
 void cleanup_game() {
 	cleanup_player();
 	cleanup_aliens();
+	cleanup_alien_bullets();
+	cleanup_player_bullet();
 	cleanup_screen();
 }
