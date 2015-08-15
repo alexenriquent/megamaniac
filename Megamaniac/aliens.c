@@ -155,6 +155,7 @@ bool update_aliens() {
 				aggressive_alien->is_visible = false;
 				aggressive_alien->x = ORIGIN;
 				aggressive_alien->y = ORIGIN;
+				aliens[random_alien_number]->bitmap = alien_img;
 				aliens[random_alien_number]->is_visible = true;
 				bounce = false;
 				random_alien_number = -1;
@@ -327,7 +328,7 @@ void update_alien_bullets() {
 
 void alien_crash(sprite_id alien) {
 	bool alive = alien->is_visible;
-	if (alive) {
+	if (alive && alien->bitmap == alien_img) {
 		if (get_screen_char(alien->x, alien->y) == '$') {
 			change_alien_status(alien->x, alien->y);
 			update_lives();
@@ -358,6 +359,7 @@ bool aggressive_motion() {
 	aggressive_alien->x = aliens[random_alien_number]->x;
 	aggressive_alien->y = aliens[random_alien_number]->y;
 	aggressive_alien->is_visible = true;
+	aliens[random_alien_number]->bitmap = invisible_alien_img;
 	aliens[random_alien_number]->is_visible = false;
 	parabolic_motion = true;
 	x_player = x_pos();
@@ -388,6 +390,27 @@ void create_aggressive_alien() {
 
 void draw_aggressive_alien() {
 	draw_sprite(aggressive_alien);
+}
+
+
+int aggressive_alien_x_pos() {
+	int x = aggressive_alien->x;
+	return x;
+}
+
+int aggressive_alien_y_pos() {
+	int y = aggressive_alien->y;
+	return y;
+}
+
+void attack_aggressive_alien() {
+	aggressive_alien->x = ORIGIN;
+	aggressive_alien->y = ORIGIN;
+	aliens[random_alien_number]->bitmap = alien_img;
+	aliens[random_alien_number]->is_visible = false;
+	bounce = false;
+	random_alien_number = -1;
+	parabolic_motion = false;
 }
 
 void move_alien() {
