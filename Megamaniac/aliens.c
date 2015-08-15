@@ -117,7 +117,7 @@ bool update_aliens() {
 			if (y_next == screen_height() * 80 / 100) {
 				alien->y = 0;
 			}
-			//random_motion(alien);
+			random_motion(alien);
 			alien->x += alien->dx;
 			if (get_screen_char(alien->x + alien->dx, alien->y) == '@' ||
 				get_screen_char(alien->x + alien->dx + 1, alien->y) == '@') {
