@@ -205,5 +205,6 @@ void cleanup_game() {
 	cleanup_aliens();
 	cleanup_alien_bullets();
 	cleanup_player_bullet();
+	cleanup_aggressive_alien();
 	cleanup_screen();
 }

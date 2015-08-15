@@ -10,6 +10,7 @@
 #define HARMONIC_STEP 10
 #define HORIZONTAL_MOTION 100
 #define DELAY 6000
+#define FINAL_LEVEL 5
 
 typedef char *string;
 
@@ -56,121 +57,146 @@ bool update_aliens() {
 
 	int level = get_level();
 
-	if (level == 1) {
-		for (int i = 0; i < ALIEN_COUNT; i++) {
-			sprite_id alien = aliens[i];
-			int x_next = (int) round(alien->x + alien->dx);
-
-			if (x_next == screen_width()) {
-				alien->x = 0;
-			}
-			alien->x += alien->dx;
-			alien->y += alien->dy;
-		}
-	} else if (level == 2) {
-		for (int i = 0; i < ALIEN_COUNT; i++) {
-			sprite_id alien = aliens[i];
-			int x_next = (int) round(alien->x + alien->dx);
-
-			if (x_next == screen_width()) {
-				alien->x = 0;
-			}
-			if (steps == 1) {
-				alien->dy = 1;
-			} else if (steps == 0 || steps == 5) {
-				alien->dy = 0;
-			} else if (steps == 6) {
-				alien->dy = -1;
-			}
-			alien->x += alien->dx;
-			alien->y += alien->dy;
-		}
-		steps = (steps + 1) % HARMONIC_STEP;
-	} else if (level == 3) {
-		for (int i = 0; i < ALIEN_COUNT; i++) {
-			sprite_id alien = aliens[i];
-			int x_next = (int) round(alien->x + alien->dx);
-			int y_next = (int) round(alien->y + alien->dy);
-
-			if (x_next == screen_width()) {
-				alien->x = 0;
-			}
-			if (y_next == screen_height() * 80 / 100) {
-				alien->y = 0;
-			}
-			alien->x += alien->dx;
-			alien->y += alien->dy;
-			alien_crash(alien);
-		}
-	} else if (level == 4) {
-		for (int i = 0; i < ALIEN_COUNT; i++) {
-			sprite_id alien = aliens[i];
-			int x_next = (int) round(alien->x + alien->dx);
-			int y_next = (int) round(alien->y + alien->dy);
-
-			if (x_next >= screen_width()) {
-				alien->x = 0;
-			}
-			if (x_next <= 0) {
-				alien->x = screen_width() - 1;
-			}
-			if (y_next == screen_height() * 80 / 100) {
-				alien->y = 0;
-			}
-			random_motion(alien);
-			alien->x += alien->dx;
-			if (get_screen_char(alien->x + alien->dx, alien->y) == '@' ||
-				get_screen_char(alien->x + alien->dx + 1, alien->y) == '@') {
-				alien->dx = -alien->dx;
-				alien->x += alien->dx;
-			}
-			alien->y += alien->dy;
-			alien_crash(alien);
-		}
-	} else if (level == 5) {
-		for (int i = 0; i < ALIEN_COUNT; i++) {
-			sprite_id alien = aliens[i];
-			int x_next = (int) round(alien->x + alien->dx);
-			int y_next = (int) round(alien->y + alien->dy);
-
-			if (x_next == screen_width()) {
-				alien->x = 0;
-			}
-			if (y_next == screen_height() * 80 / 100) {
-				alien->y = 0;
-			}
-			alien->x += alien->dx;
-			alien->y += alien->dy;
-			alien_crash(alien);
-		}
-
-		if (parabolic_motion) {
-			if (moving()) {
-				move_alien();
-			}
-
-			if (!reach_edge()) {
-				update_agressive_motion();
-				if (collide()) {
-					aliens[random_alien_number]->is_visible = false;
-				}
-			} 
-
-			if (reach_edge())  {
-				aggressive_alien->is_visible = false;
-				aggressive_alien->x = ORIGIN;
-				aggressive_alien->y = ORIGIN;
-				aliens[random_alien_number]->is_visible = true;
-				bounce = false;
-				// random_alien_number = -1;
-				parabolic_motion = false;
-			}
-		}
+	switch (level) {
+		case 1:
+			update_aliens_basic();
+			break;
+		case 2:
+			update_aliens_harmonic();
+			break;
+		case 3:	
+			update_aliens_falling();
+			break;
+		case 4:
+			update_aliens_druken();
+			break;
+		case 5:
+			update_aliens_aggressive();
+			break;
 	}
 
 	update_alien_bullets();
 
 	return true;
+}
+
+void update_aliens_basic() {
+	for (int i = 0; i < ALIEN_COUNT; i++) {
+		sprite_id alien = aliens[i];
+		int x_next = (int) round(alien->x + alien->dx);
+
+		if (x_next == screen_width()) {
+			alien->x = 0;
+		}
+		alien->x += alien->dx;
+		alien->y += alien->dy;
+	}
+}
+
+void update_aliens_harmonic() {
+	for (int i = 0; i < ALIEN_COUNT; i++) {
+		sprite_id alien = aliens[i];
+		int x_next = (int) round(alien->x + alien->dx);
+
+		if (x_next == screen_width()) {
+			alien->x = 0;
+		}
+		if (steps == 1) {
+			alien->dy = 1;
+		} else if (steps == 0 || steps == 5) {
+			alien->dy = 0;
+		} else if (steps == 6) {
+			alien->dy = -1;
+		}
+		alien->x += alien->dx;
+		alien->y += alien->dy;
+	}
+	steps = (steps + 1) % HARMONIC_STEP;
+}
+
+void update_aliens_falling() {
+	for (int i = 0; i < ALIEN_COUNT; i++) {
+		sprite_id alien = aliens[i];
+		int x_next = (int) round(alien->x + alien->dx);
+		int y_next = (int) round(alien->y + alien->dy);
+
+		if (x_next == screen_width()) {
+			alien->x = 0;
+		}
+		if (y_next == screen_height() * 80 / 100) {
+			alien->y = 0;
+		}
+		alien->x += alien->dx;
+		alien->y += alien->dy;
+		alien_crash(alien);
+	}
+}
+
+void update_aliens_druken() {
+	for (int i = 0; i < ALIEN_COUNT; i++) {
+		sprite_id alien = aliens[i];
+		int x_next = (int) round(alien->x + alien->dx);
+		int y_next = (int) round(alien->y + alien->dy);
+
+		if (x_next >= screen_width()) {
+			alien->x = 0;
+		}
+		if (x_next <= 0) {
+			alien->x = screen_width() - 1;
+		}
+		if (y_next == screen_height() * 80 / 100) {
+			alien->y = 0;
+		}
+		random_motion(alien);
+		alien->x += alien->dx;
+		if (get_screen_char(alien->x + alien->dx, alien->y) == '@' ||
+			get_screen_char(alien->x + alien->dx + 1, alien->y) == '@') {
+			alien->dx = -alien->dx;
+			alien->x += alien->dx;
+		}
+		alien->y += alien->dy;
+		alien_crash(alien);
+	}
+}
+
+void update_aliens_aggressive() {
+	for (int i = 0; i < ALIEN_COUNT; i++) {
+		sprite_id alien = aliens[i];
+		int x_next = (int) round(alien->x + alien->dx);
+		int y_next = (int) round(alien->y + alien->dy);
+
+		if (x_next == screen_width()) {
+			alien->x = 0;
+		}
+		if (y_next == screen_height() * 80 / 100) {
+			alien->y = 0;
+		}
+		alien->x += alien->dx;
+		alien->y += alien->dy;
+		alien_crash(alien);
+	}
+
+	if (parabolic_motion) {
+		if (moving()) {
+			move_alien();
+		}
+
+		if (!reach_edge()) {
+			update_agressive_motion();
+			if (collide()) {
+				aliens[random_alien_number]->is_visible = false;
+			}
+		} 
+
+		if (reach_edge())  {
+			aggressive_alien->is_visible = false;
+			aggressive_alien->x = ORIGIN;
+			aggressive_alien->y = ORIGIN;
+			aliens[random_alien_number]->is_visible = true;
+			bounce = false;
+			parabolic_motion = false;
+		}
+	}
 }
 
 void reset_aliens() {
@@ -179,7 +205,7 @@ void reset_aliens() {
 	int x_even = 0;
 	int y_even = screen_height() * 15 / 100;
 	int pattern_count = 0;
-	int level = get_level();
+	int current_level = get_level();
 
 	for (int i = 0; i < ALIEN_COUNT; i++) {
 		if (pattern_count == 0) {
@@ -198,30 +224,15 @@ void reset_aliens() {
 			aliens[i]->is_visible = true;
 			x_odd += screen_width() * 10 / 100;
 			y_odd -= screen_height() * 20 / 100;
-		}
-		if (level == 1) {
-			aliens[i]->dx = 1;
-			aliens[i]->dy = 0;
-		} else if (level == 2) {
-			steps = 0;
-			aliens[i]->dx = 1;
-			aliens[i]->dy = 1;
-		} else if (level == 3) {
-			aliens[i]->dx = 1;
-			aliens[i]->dy = 1;
-		} else if (level == 4) {
-			aliens[i]->dy = 1;
-		} else if (level == 5) {
-			aliens[i]->dx = 1;
-			aliens[i]->dy = 1;
-		}
+		}	
+		reset_levels(aliens[i], current_level);
 		pattern_count = (pattern_count + 1) % 3;
 	}
 
 	create_aggressive_alien();
 	aggressive_motion_timer = create_timer(DELAY);
 
-	if (get_level() == 5) {
+	if (get_level() == FINAL_LEVEL) {
 		// create_aggressive_alien();
 		draw_aggressive_alien();
 		// aggressive_motion_timer = create_timer(DELAY);
@@ -229,6 +240,31 @@ void reset_aliens() {
 
 	draw_aliens();
 	reset_aliens_bullets();
+}
+
+void reset_levels(sprite_id alien, int level) {
+	switch (level) {
+		case 1:
+			alien->dx = 1;
+			alien->dy = 0;
+			break;
+		case 2:
+			steps = 0;
+			alien->dx = 1;
+			alien->dy = 1;
+			break;
+		case 3:
+			alien->dx = 1;
+			alien->dy = 1;
+			break;
+		case 4:
+			alien->dy = 1;
+			break;
+		case 5:
+			alien->dx = 1;
+			alien->dy = 1;
+			break;
+	}
 }
 
 void draw_aliens() {
@@ -244,7 +280,7 @@ void change_alien_status(int x, int y) {
 		}
 	}
 
-	if (get_level() == 5 && aggressive_alien->x == x &&
+	if (get_level() == FINAL_LEVEL && aggressive_alien->x == x &&
 		aggressive_alien->y == y) {
 		aggressive_alien->x = ORIGIN;
 		aggressive_alien->y = ORIGIN;
@@ -282,7 +318,7 @@ int alive_aliens_count() {
 		}
 	}
 
-	if (get_level() == 5) {
+	if (get_level() == FINAL_LEVEL) {
 		if (parabolic_motion && count == 0) {
 			count = 1;
 			aggressive_alien->is_visible = false;
@@ -468,15 +504,7 @@ void update_agressive_motion() {
 		aggressive_alien->x += aggressive_alien->dx;
 		aggressive_alien->y += 0;
 		step_count++;
-		if (get_screen_char(aggressive_alien->x, aggressive_alien->y) == '$') {
-			aggressive_alien->x = ORIGIN;
-			aggressive_alien->y = ORIGIN;
-			aggressive_alien->is_visible = false;
-			aliens[random_alien_number]->bitmap = invisible_alien_img;
-			parabolic_motion = false;
-			update_lives();
-			reset_player_location();
-		}
+		aggressive_alien_crash();
 		if (step_count == 3) {
 			step_count = 0;
 			bounce = true;
@@ -484,18 +512,21 @@ void update_agressive_motion() {
 	} else {
 		aggressive_alien->x += aggressive_alien->dx;
 		aggressive_alien->y += aggressive_alien->dy;
-		if (get_screen_char(aggressive_alien->x, 
-			aggressive_alien->y) == '$') {
-			aggressive_alien->x = ORIGIN;
-			aggressive_alien->y = ORIGIN;
-			aggressive_alien->is_visible = false;
-			aliens[random_alien_number]->bitmap = invisible_alien_img;
-			bounce = false;
-			parabolic_motion = false;
-			update_lives();
-			reset_player_location();
-		}
+		aggressive_alien_crash();
 	}
+}
+
+void aggressive_alien_crash() {
+	if (collide()) {
+		aggressive_alien->x = ORIGIN;
+		aggressive_alien->y = ORIGIN;
+		aggressive_alien->is_visible = false;
+		aliens[random_alien_number]->bitmap = invisible_alien_img;
+		bounce = false;
+		parabolic_motion = false;
+		update_lives();
+		reset_player_location();
+	}	
 }
 
 bool collide() {
@@ -533,4 +564,8 @@ void cleanup_alien_bullets() {
 	for (int i = 0; i < BULLET_COUNT; i++) {
 		destroy_sprite(bullets[i]);
 	}
+}
+
+void cleanup_aggressive_alien() {
+	destroy_sprite(aggressive_alien);
 }
