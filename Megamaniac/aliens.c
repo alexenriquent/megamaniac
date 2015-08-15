@@ -160,7 +160,9 @@ bool update_aliens() {
 
 			if (reach_edge())  {
 				aggressive_alien->is_visible = false;
-				aliens[random_alien_number]->bitmap = alien_img;
+				aggressive_alien->x = ORIGIN;
+				aggressive_alien->y = ORIGIN;
+				aliens[random_alien_number]->is_visible = true;
 				bounce = false;
 				random_alien_number = -1;
 				parabolic_motion = false;
@@ -354,12 +356,24 @@ bool aggressive_motion() {
 	aggressive_alien->x = aliens[random_alien_number]->x;
 	aggressive_alien->y = aliens[random_alien_number]->y;
 	aggressive_alien->is_visible = true;
-	aliens[random_alien_number]->bitmap = invisible_alien_img;
-
-	moving_steps = rand() % (int)aggressive_alien->y;
+	aliens[random_alien_number]->is_visible = false;
 	parabolic_motion = true;
 	x_player = x_pos();
 	y_player = y_pos();
+
+	int x_distance = abs(x_player - aggressive_alien->x);
+	int y_distance = y_player - aggressive_alien->y;
+
+	while (x_distance != y_distance) {
+		if (x_distance > y_distance) {
+			x_distance--;
+		} else if (x_distance < y_distance) {
+			x_distance++;
+		}
+		moving_steps++;
+	}
+
+	moving_steps = moving_steps / 2;
 
 	return true;
 }
@@ -375,17 +389,20 @@ void draw_aggressive_alien() {
 }
 
 void move_alien() {
-	aggressive_alien->x += -2;
-	aggressive_alien->y += -2;
- 	moving_steps = moving_steps - 1;
 
  	if (aggressive_alien->x > x_player) {
+ 		aggressive_alien->x += -1;
+ 		aggressive_alien->y += -1;
  		aggressive_alien->dx = -1;
  		aggressive_alien->dy = 1;
  	} else if (aggressive_alien->x < x_player) {
+ 		aggressive_alien->x += 1;
+ 		aggressive_alien->y += -1;
  		aggressive_alien->dx = 1;
  		aggressive_alien->dy = 1;
  	}
+
+ 	moving_steps--;
 }
 
 void update_agressive_motion() {
@@ -397,7 +414,7 @@ void update_agressive_motion() {
 		aggressive_alien->y += 0;
 		step_count++;
 		alien_crash(aggressive_alien);
-		if (aggressive_alien->x == x_player ||
+		if (/*aggressive_alien->x == x_player ||*/
 			step_count == 3) {
 			step_count = 0;
 			bounce = true;
@@ -417,8 +434,10 @@ bool moving() {
 }
 
 bool reach_edge() {
+	int x = aggressive_alien->x;
 	int y = aggressive_alien->y;
-	if (y > 0) {
+	if (y > 0 &&
+		(x > 0 && x < screen_width())) {
 		return false;
 	}
 	return true;

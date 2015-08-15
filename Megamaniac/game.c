@@ -8,6 +8,7 @@
 #define GAME_OVER -1
 #define RESET -2
 #define LEVEL_COUNT 5
+#define FINAL_LEVEL 5
 
 typedef char *string;
 
@@ -78,9 +79,11 @@ int play_game() {
 	// if (shoot_alien_bullets()) {
 	// 	return UPDATE_SCREEN;
 	// }
-	if (aggressive_motion()) {
+	if (level == FINAL_LEVEL) {
+		if (aggressive_motion()) {
 		result = UPDATE_SCREEN;
-	} 
+		} 
+	}
 
 	check_player_alive();
 	
