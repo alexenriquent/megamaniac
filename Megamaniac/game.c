@@ -51,8 +51,8 @@ void draw_screen() {
 	draw_string(0, height * 85 / 100, author);
 	draw_string(width * 70 / 100, height * 85 / 100, score_str);
 	draw_int(width * 70 / 100 + strlen(score_str), height * 85 / 100, get_score());
-	draw_string(width * 85 / 100, height * 85 / 100, lives_str);
-	draw_int(width * 85 / 100 + strlen(lives_str), height * 85 / 100, get_lives());
+	draw_string(width * 87 / 100, height * 85 / 100, lives_str);
+	draw_int(width * 87 / 100 + strlen(lives_str), height * 85 / 100, get_lives());
 	draw_string((width / 2) - (strlen(levels[get_level() - 1]) / 2), 
 				height * 95 / 100, levels[get_level() - 1]);
 }
