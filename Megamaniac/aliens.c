@@ -35,18 +35,12 @@ void setup_aliens() {
 	create_aliens();
 	alien_timer = create_timer(ALIEN_UPDATE_TIME);
 	alien_bullet_timer = create_timer(ALIEN_BULLET_UPDATE_TIME);
-
-	aggressive_motion_timer = create_timer(DELAY);
 }
 
 void create_aliens() {
 	for (int i = 0; i < ALIEN_COUNT; i++) {
 		aliens[i] = create_sprite(ORIGIN, ORIGIN, 
 					SPRITE_WIDTH, SPRITE_HEIGHT, alien_img);
-	}
-
-	if (get_level() == 5) {
-		create_aggressive_alien();
 	}
 
 	create_alien_bullets();
@@ -124,8 +118,7 @@ bool update_aliens() {
 			random_motion(alien);
 			alien->x += alien->dx;
 			if (get_screen_char(alien->x + alien->dx, alien->y) == '@' ||
-				get_screen_char(alien->x + alien->dx + 1, alien->y) == '@' /*||
-				get_screen_char(alien->x + alien->dx + 2, alien->y) == '@'*/) {
+				get_screen_char(alien->x + alien->dx + 1, alien->y) == '@') {
 				alien->dx = -alien->dx;
 				alien->x += alien->dx;
 			}
@@ -216,10 +209,16 @@ void reset_aliens() {
 		} else if (level == 5) {
 			aliens[i]->dx = 1;
 			aliens[i]->dy = 1;
+			create_aggressive_alien();
 			aggressive_motion_timer = create_timer(DELAY);
 		}
 		pattern_count = (pattern_count + 1) % 3;
 	}
+
+	if (get_level() == 5) {
+		draw_aggressive_alien();
+	}
+
 	draw_aliens();
 }
 
@@ -327,10 +326,13 @@ void update_alien_bullets() {
 }
 
 void alien_crash(sprite_id alien) {
-	if (get_screen_char(alien->x, alien->y) == '$') {
-		change_alien_status(alien->x, alien->y);
-		update_lives();
-		reset_player_location();
+	bool alive = alien->is_visible;
+	if (alive) {
+		if (get_screen_char(alien->x, alien->y) == '$') {
+			change_alien_status(alien->x, alien->y);
+			update_lives();
+			reset_player_location();
+		}
 	}
 }
 

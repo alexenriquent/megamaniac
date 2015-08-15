@@ -76,9 +76,9 @@ int play_game() {
 	} else if (update_aliens()) {
 		result = UPDATE_SCREEN;
 	} 
-	// if (shoot_alien_bullets()) {
-	// 	return UPDATE_SCREEN;
-	// }
+	if (shoot_alien_bullets()) {
+		return UPDATE_SCREEN;
+	}
 	if (level == FINAL_LEVEL) {
 		if (aggressive_motion()) {
 		result = UPDATE_SCREEN;
@@ -97,7 +97,7 @@ void update_game() {
 	draw_aliens();
 	draw_alien_bullets();
 
-	if (level == 5) {
+	if (level == FINAL_LEVEL) {
 		draw_aggressive_alien();
 	}
 
@@ -119,7 +119,11 @@ int get_level() {
 }
 
 void level_up() {
-	level++;
+	if (level == FINAL_LEVEL) {
+		level = FINAL_LEVEL;
+	} else {
+		level++;
+	}
 }
 
 void setup_banner() {

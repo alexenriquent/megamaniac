@@ -12,6 +12,7 @@ typedef char *string;
 
 sprite_id player;
 sprite_id bullet;
+sprite_id curved_bullet;
 bool alive;
 string alive_img = "$";
 string dead_img = "_";
@@ -19,6 +20,8 @@ string bullet_img = "|";
 bool shooting = false;
 int score = 3;
 int lives = 1;
+int key_hold;
+bool holding = false;
 
 void setup_player() {
 	int x_player = screen_width() / 2;
@@ -47,7 +50,7 @@ bool update_player(int key) {
 			player->x = screen_width() - 1;
 		} else {
 			player->x += RIGHT;
-		}
+		}		
 		return true;
 	} 
 	if (key == 'S' || key == 's') {
@@ -56,6 +59,19 @@ bool update_player(int key) {
 			shooting = false;
 		} 
 		return true;
+	} 
+	if (get_level() == 5) {
+		if (key == 'Z' || key == 'z') {
+			if (!shooting) {
+				shoot_left_curved_bullet(45);
+				shooting = false;
+			} 
+		} else if (key == 'C' || key == 'c') {
+			if (!shooting) {
+				shoot_right_curved_bullet(135);
+				shooting = false;
+			} 
+		}
 	}
 
 	return false;
@@ -66,6 +82,7 @@ void shoot_player_bullet() {
 	shooting = true;
 	bullet = create_sprite((double)player->x, (double)player->y, 
 					SPRITE_WIDTH, SPRITE_HEIGHT, bullet_img);
+	bullet->dy = -1;
 
 	while (bullet->y > 0) {
 		clear_screen();
@@ -89,13 +106,105 @@ void shoot_player_bullet() {
 }
 
 void update_player_bullet() {
-	bullet->dy = -1;
 	bullet->y += bullet->dy;
 
 	if (get_screen_char(bullet->x, bullet->y) == '@') {
 		bullet->is_visible = false;
 		change_alien_status(bullet->x, bullet->y);
 		bullet->y = 0;
+		score += SCORE_PER_ALIEN;
+		if (alive_aliens_count() == 0) {
+			score += SCORE_PER_LEVEL;
+			level_up();
+			reset_aliens();
+		}
+	}
+}
+
+void shoot_left_curved_bullet(double degree) {
+	int key = get_char();
+	shooting = true;
+	curved_bullet = create_sprite((double)player->x, (double)player->y, 
+					SPRITE_WIDTH, SPRITE_HEIGHT, bullet_img);
+	curved_bullet->dy = -1;
+	turn_sprite(curved_bullet, degree);
+
+
+	while (curved_bullet->y > 0) {
+		clear_screen();
+		update_player(key);
+		update_aliens();
+		draw_screen();
+		draw_player();
+		draw_aliens();
+		draw_alien_bullets();
+		update_left_curved_bullet();
+		draw_sprite(curved_bullet);
+
+		if (get_level() == 5) {
+			draw_aggressive_alien();
+		}
+
+		show_screen();
+		key = get_char();
+		timer_pause(INTERVAL);
+	}
+}
+
+void update_left_curved_bullet() {
+	curved_bullet->x += curved_bullet->dx;
+	curved_bullet->y += curved_bullet->dy;
+
+	if (get_screen_char(curved_bullet->x, curved_bullet->y) == '@') {
+		curved_bullet->is_visible = false;
+		change_alien_status(curved_bullet->x, curved_bullet->y);
+		curved_bullet->y = 0;
+		score += SCORE_PER_ALIEN;
+		if (alive_aliens_count() == 0) {
+			score += SCORE_PER_LEVEL;
+			level_up();
+			reset_aliens();
+		}
+	}
+}
+
+void shoot_right_curved_bullet(double degree) {
+	int key = get_char();
+	shooting = true;
+	curved_bullet = create_sprite((double)player->x, (double)player->y, 
+					SPRITE_WIDTH, SPRITE_HEIGHT, bullet_img);
+	curved_bullet->dy = -1;
+	turn_sprite(curved_bullet, degree);
+
+	while (curved_bullet->y > 0) {
+		clear_screen();
+		update_player(key);
+		update_aliens();
+		draw_screen();
+		draw_player();
+		draw_aliens();
+		draw_alien_bullets();
+		update_right_curved_bullet();
+		draw_sprite(curved_bullet);
+
+		if (get_level() == 5) {
+			draw_aggressive_alien();
+		}
+
+		show_screen();
+		key = get_char();
+		timer_pause(INTERVAL);
+	}
+}
+
+void update_right_curved_bullet() {
+	curved_bullet->x += curved_bullet->dx;
+	curved_bullet->y += curved_bullet->dy;
+
+	if (get_screen_char(curved_bullet->x, curved_bullet->y) == '@') {
+		curved_bullet->is_visible = false;
+		change_alien_status(curved_bullet->x, curved_bullet->y);
+		curved_bullet->y = 0;
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
