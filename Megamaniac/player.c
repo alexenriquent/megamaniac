@@ -179,6 +179,20 @@ void update_left_curved_bullet() {
 			level_up();
 		}
 	}
+
+	if (get_level() == 5) {
+		if (bullet->x == aggressive_alien_x_pos() &&
+			bullet->y == aggressive_alien_y_pos()) {
+			bullet->is_visible = false;
+			change_alien_status(bullet->x, bullet->y);
+			bullet->y = 0;
+			score += SCORE_PER_ALIEN;
+			if (alive_aliens_count() == 0) {
+				score += SCORE_PER_LEVEL;
+				level_up();
+			}
+		}
+	}
 }
 
 void shoot_right_curved_bullet(double degree) {
@@ -222,6 +236,20 @@ void update_right_curved_bullet() {
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
 			level_up();
+		}
+	}
+
+	if (get_level() == 5) {
+		if (bullet->x == aggressive_alien_x_pos() &&
+			bullet->y == aggressive_alien_y_pos()) {
+			bullet->is_visible = false;
+			change_alien_status(bullet->x, bullet->y);
+			bullet->y = 0;
+			score += SCORE_PER_ALIEN;
+			if (alive_aliens_count() == 0) {
+				score += SCORE_PER_LEVEL;
+				level_up();
+			}
 		}
 	}
 }

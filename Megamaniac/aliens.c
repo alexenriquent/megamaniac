@@ -250,7 +250,6 @@ void change_alien_status(int x, int y) {
 		aggressive_alien->y = ORIGIN;
 		aggressive_alien->is_visible = false;
 		aliens[random_alien_number]->is_visible = false;
-		// random_alien_number = -1;
 		parabolic_motion = false;
 		bounce = false;
 	}
@@ -291,7 +290,6 @@ int alive_aliens_count() {
 			aggressive_alien->y = ORIGIN;
 			aliens[random_alien_number]->is_visible = true;
 			bounce = false;
-			// random_alien_number = -1;
 			parabolic_motion = false;
 		}
 	}
@@ -453,6 +451,9 @@ void move_alien() {
  		aggressive_alien->x += 1;
  		aggressive_alien->y += -1;
  		aggressive_alien->dx = 1;
+ 		aggressive_alien->dy = 1;
+ 	} else {
+ 		aggressive_alien->y += -1;
  		aggressive_alien->dy = 1;
  	}
 
