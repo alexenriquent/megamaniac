@@ -117,7 +117,7 @@ void update_player_bullet() {
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
-			level_up();
+			// level_up();
 		}
 	}
 
@@ -130,7 +130,7 @@ void update_player_bullet() {
 			score += SCORE_PER_ALIEN;
 			if (alive_aliens_count() == 0) {
 				score += SCORE_PER_LEVEL;
-				level_up();
+				// level_up();
 			}
 		}
 	}
@@ -177,7 +177,7 @@ void update_left_curved_bullet() {
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
-			level_up();
+			// level_up();
 		}
 	}
 
@@ -190,7 +190,7 @@ void update_left_curved_bullet() {
 			score += SCORE_PER_ALIEN;
 			if (alive_aliens_count() == 0) {
 				score += SCORE_PER_LEVEL;
-				level_up();
+				// level_up();
 			}
 		}
 	}
@@ -236,7 +236,7 @@ void update_right_curved_bullet() {
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
-			level_up();
+			// level_up();
 		}
 	}
 
@@ -249,7 +249,7 @@ void update_right_curved_bullet() {
 			score += SCORE_PER_ALIEN;
 			if (alive_aliens_count() == 0) {
 				score += SCORE_PER_LEVEL;
-				level_up();
+				// level_up();
 			}
 		}
 	}

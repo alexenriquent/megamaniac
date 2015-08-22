@@ -18,6 +18,7 @@ string score_str = "score: ";
 string lives_str = "lives: ";
 sprite_id gameover_banner;
 sprite_id levelup_banner;
+sprite_id final_banner;
 char line = '-';
 int level = FIRST_LEVEL;
 
@@ -41,6 +42,13 @@ string levelup_banner_img =
 "|     Press 'q' to quit or 'r' to restart.      |"
 "+-----------------------------------------------+";
 
+string final_banner_img = 
+"+-----------------------------------------------+"
+"|      YOU HAVE COMPLETED THE FINAL LEVEL!      |"
+"|          Press 'l' to keep playing.           |"
+"|     Press 'q' to quit or 'r' to restart.      |"
+"+-----------------------------------------------+";
+
 void setup_game() {
 	setup_screen();
 	draw_screen();
@@ -49,6 +57,7 @@ void setup_game() {
 	draw_player();
 	draw_aliens();
 	setup_levelup_banner();
+	setup_final_banner();
 	setup_gameover_banner();
 	show_screen();
 }
@@ -78,12 +87,17 @@ int play_game() {
 		return NORMAL_MODE;
 	} else if ((key == 'L' || key == 'l') &&
 				alive_aliens_count() == 0) {
+		level_up();
 		reset_player();
 		reset_aliens();
 		result = UPDATE_SCREEN;
 	}
 	if (conquer()) {
-		display_levelup_banner();
+		if (level == FINAL_LEVEL) {
+			display_final_banner();
+		} else {
+			display_levelup_banner();
+		}
 		return NORMAL_MODE;
 	}
 	if (!is_alive()) {
@@ -172,6 +186,33 @@ void display_levelup_banner() {
 	draw_player();
 	draw_aliens();
 	draw_levelup_banner();
+}
+
+void setup_final_banner() {
+	int width = screen_width();
+	int height = screen_height();
+	int banner_width = strlen(final_banner_img) / 5;
+	int banner_height = 5;
+
+	final_banner = create_sprite(ORIGIN, ORIGIN, banner_width, 
+			 banner_height, final_banner_img);
+	final_banner->x = (width - banner_width) / 2;
+	final_banner->y = (height - banner_height) / 2;
+	final_banner->is_visible = false;
+}
+
+void draw_final_banner() {
+	draw_sprite(final_banner);
+	final_banner->is_visible = true;
+}
+
+void display_final_banner() {
+	change_player_status();
+	clear_screen();
+	draw_screen();	
+	draw_player();
+	draw_aliens();
+	draw_final_banner();
 }
 
 void setup_gameover_banner() {
