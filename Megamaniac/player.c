@@ -7,6 +7,7 @@
 #define INTERVAL 35
 #define SCORE_PER_ALIEN 30
 #define SCORE_PER_LEVEL 500
+#define FINAL_LEVEL 5
 
 typedef char *string;
 
@@ -94,7 +95,7 @@ void shoot_player_bullet() {
 		draw_aliens();
 		draw_alien_bullets();
 
-		if (get_level() == 5) {
+		if (get_level() == FINAL_LEVEL) {
 			draw_aggressive_alien();
 		}
 
@@ -120,7 +121,7 @@ void update_player_bullet() {
 		}
 	}
 
-	if (get_level() == 5) {
+	if (get_level() == FINAL_LEVEL) {
 		if (bullet->x == aggressive_alien_x_pos() &&
 			bullet->y == aggressive_alien_y_pos()) {
 			bullet->is_visible = false;
@@ -155,7 +156,7 @@ void shoot_left_curved_bullet(double degree) {
 		update_left_curved_bullet();
 		draw_sprite(curved_bullet);
 
-		if (get_level() == 5) {
+		if (get_level() == FINAL_LEVEL) {
 			draw_aggressive_alien();
 		}
 
@@ -180,7 +181,7 @@ void update_left_curved_bullet() {
 		}
 	}
 
-	if (get_level() == 5) {
+	if (get_level() == FINAL_LEVEL) {
 		if (bullet->x == aggressive_alien_x_pos() &&
 			bullet->y == aggressive_alien_y_pos()) {
 			bullet->is_visible = false;
@@ -214,7 +215,7 @@ void shoot_right_curved_bullet(double degree) {
 		update_right_curved_bullet();
 		draw_sprite(curved_bullet);
 
-		if (get_level() == 5) {
+		if (get_level() == FINAL_LEVEL) {
 			draw_aggressive_alien();
 		}
 
@@ -239,7 +240,7 @@ void update_right_curved_bullet() {
 		}
 	}
 
-	if (get_level() == 5) {
+	if (get_level() == FINAL_LEVEL) {
 		if (bullet->x == aggressive_alien_x_pos() &&
 			bullet->y == aggressive_alien_y_pos()) {
 			bullet->is_visible = false;
