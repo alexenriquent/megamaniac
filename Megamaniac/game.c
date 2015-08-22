@@ -19,7 +19,7 @@ string lives_str = "lives: ";
 sprite_id gameover_banner;
 sprite_id levelup_banner;
 char line = '-';
-int level = FINAL_LEVEL;
+int level = FIRST_LEVEL;
 
 string levels[LEVEL_COUNT] = {
 		"Level 1 - Basic",
