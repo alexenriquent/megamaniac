@@ -430,6 +430,9 @@ bool aggressive_motion() {
 	}
 
 	random_alien_number = get_random_alien();
+	while (random_alien_number == 7) {
+		random_alien_number = get_random_alien();
+	}
 	aggressive_alien->x = aliens[random_alien_number]->x;
 	aggressive_alien->y = aliens[random_alien_number]->y;
 	aggressive_alien->is_visible = true;
@@ -477,7 +480,6 @@ int aggressive_alien_y_pos() {
 }
 
 void move_alien() {
-
  	if (aggressive_alien->x > x_player) {
  		aggressive_alien->x += -1;
  		aggressive_alien->y += -1;
@@ -490,6 +492,7 @@ void move_alien() {
  		aggressive_alien->dy = 1;
  	} else {
  		aggressive_alien->y += -1;
+ 		aggressive_alien->dx = 1;
  		aggressive_alien->dy = 1;
  	}
 
@@ -498,8 +501,24 @@ void move_alien() {
 
 void update_agressive_motion() {
 	if (bounce) { 
-		aggressive_alien->x += aggressive_alien->dx;
-		aggressive_alien->y -= aggressive_alien->dy;
+		if (get_screen_char(aggressive_alien->x - aggressive_alien->dx, 
+			aggressive_alien->y + aggressive_alien->dy) == '@' ||
+			get_screen_char(aggressive_alien->x + aggressive_alien->dx, 
+			aggressive_alien->y + aggressive_alien->dy) == '@' ||
+			get_screen_char(aggressive_alien->x + aggressive_alien->dx + aggressive_alien->dx, 
+			aggressive_alien->y + aggressive_alien->dy + aggressive_alien->dy) == '@' ||
+			get_screen_char(aggressive_alien->x, 
+			aggressive_alien->y + aggressive_alien->dy) == '@' ||
+			get_screen_char(aggressive_alien->x, 
+			aggressive_alien->y - 1) == '@') {
+			aggressive_alien->dx = -aggressive_alien->dx;
+			aggressive_alien->x += aggressive_alien->dx;
+			aggressive_alien->y -= aggressive_alien->dy;
+			aggressive_alien->dx = -aggressive_alien->dx;
+		} else {
+			aggressive_alien->x += aggressive_alien->dx;
+			aggressive_alien->y -= aggressive_alien->dy;
+		}
 	} else if (aggressive_alien->y == y_player) {
 		aggressive_alien->x += aggressive_alien->dx;
 		aggressive_alien->y += 0;
@@ -510,9 +529,14 @@ void update_agressive_motion() {
 			bounce = true;
 		}
 	} else {
-		aggressive_alien->x += aggressive_alien->dx;
-		aggressive_alien->y += aggressive_alien->dy;
-		aggressive_alien_crash();
+		if (aggressive_alien->x == x_player) {
+			aggressive_alien->y += aggressive_alien->dy;
+			aggressive_alien_crash();
+		} else {
+			aggressive_alien->x += aggressive_alien->dx;
+			aggressive_alien->y += aggressive_alien->dy;
+			aggressive_alien_crash();
+		}
 	}
 }
 
