@@ -8,12 +8,14 @@
 #define SCORE_PER_ALIEN 30
 #define SCORE_PER_LEVEL 500
 #define FINAL_LEVEL 5
+#define KEYPRESS_INTERVAL 600
 
 typedef char *string;
 
 sprite_id player;
 sprite_id bullet;
 sprite_id curved_bullet;
+timer_id keypress_timer;
 string alive_img = "$";
 string dead_img = "_";
 string bullet_img = "|";
@@ -62,15 +64,43 @@ bool update_player(int key) {
 		} 
 		return true;
 	} 
-	if (get_level() == 5) {
+	if (get_level() == FINAL_LEVEL) {
 		if (key == 'Z' || key == 'z') {
+			keypress_timer = create_timer(KEYPRESS_INTERVAL);
+			double degree = 90;
+
+			while (!timer_expired(keypress_timer)) {
+				if (key == 'Z' || key == 'z') {
+					reset_timer(keypress_timer);
+					degree -= 1.5;
+					if (degree <= 0) {
+						degree = 0;
+					}
+				}
+				key = get_char();
+			}
+
 			if (!shooting) {
-				shoot_left_curved_bullet(45);
+				shoot_left_curved_bullet(degree);
 				shooting = false;
 			} 
 		} else if (key == 'C' || key == 'c') {
+			keypress_timer = create_timer(KEYPRESS_INTERVAL);
+			double degree = 90;
+			
+			while (!timer_expired(keypress_timer)) {
+				if (key == 'C' || key == 'c') {
+					reset_timer(keypress_timer);
+					degree += 1.5;
+					if (degree >= 180) {
+						degree = 180;
+					}
+				}
+				key = get_char();
+			}
+
 			if (!shooting) {
-				shoot_right_curved_bullet(135);
+				shoot_right_curved_bullet(degree);
 				shooting = false;
 			} 
 		}
@@ -117,7 +147,6 @@ void update_player_bullet() {
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
-			// level_up();
 		}
 	}
 
@@ -130,7 +159,6 @@ void update_player_bullet() {
 			score += SCORE_PER_ALIEN;
 			if (alive_aliens_count() == 0) {
 				score += SCORE_PER_LEVEL;
-				// level_up();
 			}
 		}
 	}
@@ -145,7 +173,8 @@ void shoot_left_curved_bullet(double degree) {
 	turn_sprite(curved_bullet, degree);
 
 
-	while (curved_bullet->y > 0) {
+	while (curved_bullet->y > 0 &&
+		curved_bullet->x > 0) {
 		clear_screen();
 		update_player(key);
 		update_aliens();
@@ -177,7 +206,6 @@ void update_left_curved_bullet() {
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
-			// level_up();
 		}
 	}
 
@@ -190,7 +218,6 @@ void update_left_curved_bullet() {
 			score += SCORE_PER_ALIEN;
 			if (alive_aliens_count() == 0) {
 				score += SCORE_PER_LEVEL;
-				// level_up();
 			}
 		}
 	}
@@ -204,7 +231,8 @@ void shoot_right_curved_bullet(double degree) {
 	curved_bullet->dy = -1;
 	turn_sprite(curved_bullet, degree);
 
-	while (curved_bullet->y > 0) {
+	while (curved_bullet->y > 0 &&
+		curved_bullet->x < screen_width()) {
 		clear_screen();
 		update_player(key);
 		update_aliens();
@@ -236,7 +264,6 @@ void update_right_curved_bullet() {
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
 			score += SCORE_PER_LEVEL;
-			// level_up();
 		}
 	}
 
@@ -249,7 +276,6 @@ void update_right_curved_bullet() {
 			score += SCORE_PER_ALIEN;
 			if (alive_aliens_count() == 0) {
 				score += SCORE_PER_LEVEL;
-				// level_up();
 			}
 		}
 	}
