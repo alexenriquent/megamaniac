@@ -23,11 +23,11 @@ char line = '-';
 int level = FIRST_LEVEL;
 
 string levels[LEVEL_COUNT] = {
-		"Level 1 - Basic",
-		"Level 2 - Harmonic",
-		"Level 3 - Falling",
-		"Level 4 - Drunken",
-		"Level 5 - Aggressive"};
+		"Level 1 - Basic Motion",
+		"Level 2 - Harmonic Motion",
+		"Level 3 - Falling Motion",
+		"Level 4 - Drunken Motion",
+		"Level 5 - Aggressive Motion"};
 
 string gameover_banner_img = 
 "+-----------------------------------------------+"
@@ -66,14 +66,14 @@ void draw_screen() {
 	int width = screen_width();
 	int height = screen_height();
 
-	draw_line(0, height * 80 / 100, width - 1, height * 80 / 100, line);
-	draw_string(0, height * 85 / 100, author);
-	draw_string(width * 70 / 100, height * 85 / 100, score_str);
-	draw_int(width * 70 / 100 + strlen(score_str), height * 85 / 100, get_score());
-	draw_string(width * 87 / 100, height * 85 / 100, lives_str);
-	draw_int(width * 87 / 100 + strlen(lives_str), height * 85 / 100, get_lives());
+	draw_line(0, height - 5, width - 1, height - 5, line);
+	draw_string(0, height - 4, author);
+	draw_string(width * 73 / 100, height - 4, score_str);
+	draw_int(width * 73 / 100 + strlen(score_str), height - 4, get_score());
+	draw_string(width * 88 / 100, height - 4, lives_str);
+	draw_int(width * 88 / 100 + strlen(lives_str), height - 4, get_lives());
 	draw_string((width / 2) - (strlen(levels[get_level() - 1]) / 2), 
-				height * 95 / 100, levels[get_level() - 1]);
+				height - 2, levels[get_level() - 1]);
 }
 
 int play_game() {

@@ -7,7 +7,7 @@
 #define ALIEN_UPDATE_TIME 500
 #define ALIEN_BULLET_UPDATE_TIME 3000
 #define BULLET_COUNT 4
-#define HARMONIC_STEP 10
+#define HARMONIC_STEP 12
 #define HORIZONTAL_MOTION 100
 #define DELAY 6000
 #define FINAL_LEVEL 5
@@ -101,11 +101,12 @@ void update_aliens_harmonic() {
 		if (x_next == screen_width()) {
 			alien->x = 0;
 		}
-		if (steps == 1) {
+		if (steps == 2) {
 			alien->dy = 1;
-		} else if (steps == 0 || steps == 5) {
+		} else if (steps == 0 || steps == 1 || 
+			steps == 6 || steps == 7) {
 			alien->dy = 0;
-		} else if (steps == 6) {
+		} else if (steps == 8) {
 			alien->dy = -1;
 		}
 		alien->x += alien->dx;
@@ -123,7 +124,7 @@ void update_aliens_falling() {
 		if (x_next == screen_width()) {
 			alien->x = 0;
 		}
-		if (y_next == screen_height() * 80 / 100) {
+		if (y_next == screen_height() - 5) {
 			alien->y = 0;
 		}
 		alien->x += alien->dx;
@@ -144,10 +145,10 @@ void update_aliens_druken() {
 		if (x_next <= 0) {
 			alien->x = screen_width() - 1;
 		}
-		if (y_next == screen_height() * 80 / 100) {
+		if (y_next == screen_height() - 5) {
 			alien->y = 0;
 		}
-		random_motion(alien);
+		// random_motion(alien);
 		alien->x += alien->dx;
 		if (get_screen_char(alien->x + alien->dx, alien->y) == '@' ||
 			get_screen_char(alien->x + alien->dx + 1, alien->y) == '@') {
@@ -168,7 +169,7 @@ void update_aliens_aggressive() {
 		if (x_next == screen_width()) {
 			alien->x = 0;
 		}
-		if (y_next == screen_height() * 80 / 100) {
+		if (y_next == screen_height() - 5) {
 			alien->y = 0;
 		}
 		alien->x += alien->dx;
@@ -383,7 +384,7 @@ void update_alien_bullets() {
 			bullets[i]->y = ORIGIN;
 			update_lives();
 			reset_player_location();
-		} else if (bullets[i]->y >= screen_height() * 80 / 100 - 1) {
+		} else if (bullets[i]->y >= screen_height() - 6) {
 			bullets[i]->is_visible = false;
 			bullets[i]->x = ORIGIN;
 			bullets[i]->y = ORIGIN;
@@ -416,9 +417,9 @@ void random_motion(sprite_id alien) {
 
 	if (motion % 2 == 0 || motion % 3 == 0 ||
 		motion % 5 == 0) {
-		alien->dx = 1;
+		alien->dx = 2;
 	} else {
-		alien->dx = -1;
+		alien->dx = -2;
 	} 
 }
 
