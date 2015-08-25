@@ -6,7 +6,6 @@
 #define UPDATE_SCREEN 1
 #define NORMAL_MODE 0
 #define GAME_OVER -1
-#define RESET -2
 #define LEVEL_COUNT 5
 #define FIRST_LEVEL 1
 #define FINAL_LEVEL 5
