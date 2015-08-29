@@ -22,6 +22,7 @@ void reset_aliens();
 void reset_levels(sprite_id alien, int level);
 void draw_aliens();
 void change_alien_status(int x, int y);
+bool is_alien(int x, int y);
 int get_random_alien();
 int alive_aliens_count();
 bool alien_is_alive(int alien_num);

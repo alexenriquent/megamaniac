@@ -161,7 +161,10 @@ void shoot_player_bullet() {
 void update_player_bullet() {
 	bullet->y += bullet->dy;
 
-	if (get_screen_char(bullet->x, bullet->y) == '@') {
+	int bullet_x = (int) round(bullet->x);
+	int bullet_y = (int) round(bullet->y);
+
+	if (is_alien(bullet_x, bullet_y)) {
 		bullet->is_visible = false;
 		change_alien_status(bullet->x, bullet->y);
 		bullet->y = 0;
@@ -172,8 +175,8 @@ void update_player_bullet() {
 	}
 
 	if (get_level() == FINAL_LEVEL) {
-		if (bullet->x == aggressive_alien_x_pos() &&
-			bullet->y == aggressive_alien_y_pos()) {
+		if (bullet_x == aggressive_alien_x_pos() &&
+			bullet_y == aggressive_alien_y_pos()) {
 			bullet->is_visible = false;
 			change_alien_status(bullet->x, bullet->y);
 			bullet->y = 0;
@@ -220,7 +223,10 @@ void update_left_curved_bullet() {
 	curved_bullet->x += curved_bullet->dx;
 	curved_bullet->y += curved_bullet->dy;
 
-	if (get_screen_char(curved_bullet->x, curved_bullet->y) == '@') {
+	int curved_bullet_x = (int) round(curved_bullet->x);
+	int curved_bullet_y = (int) round(curved_bullet->y);
+
+	if (is_alien(curved_bullet_x, curved_bullet_y)) {
 		curved_bullet->is_visible = false;
 		change_alien_status(curved_bullet->x, curved_bullet->y);
 		curved_bullet->y = 0;
@@ -231,8 +237,8 @@ void update_left_curved_bullet() {
 	}
 
 	if (get_level() == FINAL_LEVEL) {
-		if (curved_bullet->x == aggressive_alien_x_pos() &&
-			curved_bullet->y == aggressive_alien_y_pos()) {
+		if (curved_bullet_x == aggressive_alien_x_pos() &&
+			curved_bullet_y == aggressive_alien_y_pos()) {
 			curved_bullet->is_visible = false;
 			change_alien_status(curved_bullet->x, curved_bullet->y);
 			curved_bullet->y = 0;
@@ -278,7 +284,10 @@ void update_right_curved_bullet() {
 	curved_bullet->x += curved_bullet->dx;
 	curved_bullet->y += curved_bullet->dy;
 
-	if (get_screen_char(curved_bullet->x, curved_bullet->y) == '@') {
+	int curved_bullet_x = (int) round(curved_bullet->x);
+	int curved_bullet_y = (int) round(curved_bullet->y);
+
+	if (is_alien(curved_bullet_x, curved_bullet_y)) {
 		curved_bullet->is_visible = false;
 		change_alien_status(curved_bullet->x, curved_bullet->y);
 		curved_bullet->y = 0;
@@ -289,8 +298,8 @@ void update_right_curved_bullet() {
 	}
 
 	if (get_level() == FINAL_LEVEL) {
-		if (curved_bullet->x == aggressive_alien_x_pos() &&
-			curved_bullet->y == aggressive_alien_y_pos()) {
+		if (curved_bullet_x == aggressive_alien_x_pos() &&
+			curved_bullet_y == aggressive_alien_y_pos()) {
 			curved_bullet->is_visible = false;
 			change_alien_status(curved_bullet->x, curved_bullet->y);
 			curved_bullet->y = 0;
@@ -327,12 +336,12 @@ void reset_player_location() {
 }
 
 int x_pos() {
-	int x = player->x;
+	int x = (int) round(player->x);
 	return x;
 }
 
 int y_pos() {
-	int y = player->y;
+	int y = (int) round(player->y);
 	return y;
 }
 

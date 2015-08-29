@@ -148,10 +148,10 @@ void update_aliens_druken() {
 		if (y_next == screen_height() - 5) {
 			alien->y = 0;
 		}
-		// random_motion(alien);
+		random_motion(alien);
 		alien->x += alien->dx;
-		if (get_screen_char(alien->x + alien->dx, alien->y) == '@' ||
-			get_screen_char(alien->x + alien->dx + 1, alien->y) == '@') {
+		if (is_alien((int) round(alien->x + alien->dx), (int) round(alien->y)) ||
+			is_alien((int) round(alien->x + alien->dx + 1), (int) round(alien->y))) {
 			alien->dx = -alien->dx;
 			alien->x += alien->dx;
 		}
@@ -276,13 +276,16 @@ void draw_aliens() {
 
 void change_alien_status(int x, int y) {
 	for (int i = 0; i < ALIEN_COUNT; i++) {
-		if (aliens[i]->x == x && aliens[i]->y == y) {
+		int alien_x = (int) round(aliens[i]->x);
+		int alien_y = (int) round(aliens[i]->y);
+		if (alien_x == x && alien_y == y) {
 			aliens[i]->is_visible = false;
 		}
 	}
 
-	if (get_level() == FINAL_LEVEL && aggressive_alien->x == x &&
-		aggressive_alien->y == y) {
+	if (get_level() == FINAL_LEVEL && 
+		aggressive_alien_x_pos() == x &&
+		aggressive_alien_y_pos() == y) {
 		aggressive_alien->x = ORIGIN;
 		aggressive_alien->y = ORIGIN;
 		aggressive_alien->is_visible = false;
@@ -290,6 +293,18 @@ void change_alien_status(int x, int y) {
 		parabolic_motion = false;
 		bounce = false;
 	}
+}
+
+bool is_alien(int x, int y) {
+	for (int i = 0; i < ALIEN_COUNT; i++) {
+		int alien_x = (int) round(aliens[i]->x);
+		int alien_y = (int) round(aliens[i]->y);
+		if (alien_x == x && alien_y == y &&
+			aliens[i]->is_visible) {
+			return true;
+		} 
+	}
+	return false;
 }
 
 int get_random_alien() {
@@ -378,7 +393,9 @@ bool shoot_alien_bullets() {
 
 void update_alien_bullets() {
 	for (int i = 0; i < BULLET_COUNT; i++) {
-		if (get_screen_char(bullets[i]->x, bullets[i]->y + 1) == '$') {
+		int bullet_x = (int) round(bullets[i]->x);
+		int bullet_y = (int) round(bullets[i]->y);
+		if (bullet_x == x_pos() && bullet_y + 1 == y_pos()) {
 			bullets[i]->is_visible = false;
 			bullets[i]->x = ORIGIN;
 			bullets[i]->y = ORIGIN;
@@ -403,8 +420,11 @@ void reset_aliens_bullets() {
 
 void alien_crash(sprite_id alien) {
 	bool alive = alien->is_visible;
+	int alien_x = (int) round(alien->x);
+	int alien_y = (int) round(alien->y);
+
 	if (alive) {
-		if (get_screen_char(alien->x, alien->y) == '$') {
+		if (alien_x == x_pos() && alien_y == y_pos()) {
 			change_alien_status(alien->x, alien->y);
 			update_lives();
 			reset_player_location();
@@ -471,12 +491,12 @@ void draw_aggressive_alien() {
 
 
 int aggressive_alien_x_pos() {
-	int x = aggressive_alien->x;
+	int x = (int) round(aggressive_alien->x);
 	return x;
 }
 
 int aggressive_alien_y_pos() {
-	int y = aggressive_alien->y;
+	int y = (int) round(aggressive_alien->y);
 	return y;
 }
 
@@ -555,8 +575,8 @@ void aggressive_alien_crash() {
 }
 
 bool collide() {
-	if (get_screen_char(aggressive_alien->x, 
-		aggressive_alien->y) == '$') {
+	if (aggressive_alien_x_pos() == x_pos() &&
+		aggressive_alien_y_pos() == y_pos()) {
 		return true;
 	}
 	return false;
