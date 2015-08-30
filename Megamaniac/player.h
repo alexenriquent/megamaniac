@@ -23,6 +23,7 @@ void reset_player_location();
 int x_pos();
 int y_pos();
 int get_score();
+void update_score(int points); 
 int get_lives();
 void update_lives();
 bool conquer();

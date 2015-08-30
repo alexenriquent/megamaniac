@@ -328,7 +328,7 @@ void reset_player_location() {
 	player->x = x_player;
 	player->y = y_player;
 	
-	while (get_screen_char(player->x, player->y) == '@') {
+	while (is_alien(player->x, player->y)) {
 		int random = rand() % screen_width();
 		player->x = x_player;
 		player->y = random;
@@ -347,6 +347,10 @@ int y_pos() {
 
 int get_score() {
 	return score;
+}
+
+void update_score(int points) {
+	score += points; 
 }
 
 int get_lives() {

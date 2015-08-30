@@ -35,11 +35,11 @@ void reset_aliens_bullets();
 
 void alien_crash(sprite_id alien);
 void random_motion(sprite_id alien);
-bool aggressive_motion();
 void create_aggressive_alien();
 void draw_aggressive_alien();
 int aggressive_alien_x_pos();
 int aggressive_alien_y_pos();
+bool aggressive_motion();
 void move_alien();
 void update_agressive_motion();
 void aggressive_alien_crash();

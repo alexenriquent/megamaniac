@@ -19,7 +19,7 @@ sprite_id gameover_banner;
 sprite_id levelup_banner;
 sprite_id final_banner;
 char line = '-';
-int level = 4;
+int level = 3;
 
 string levels[LEVEL_COUNT] = {
 		"Level 1 - Basic Motion",
@@ -37,7 +37,7 @@ string gameover_banner_img =
 string levelup_banner_img = 
 "+-----------------------------------------------+"
 "|                  LEVEL UP!                    |"
-"|    Press 'l' to process to the next level.    |"
+"|    Press 'l' to proceed to the next level.    |"
 "|     Press 'q' to quit or 'r' to restart.      |"
 "+-----------------------------------------------+";
 

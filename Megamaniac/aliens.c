@@ -9,8 +9,9 @@
 #define BULLET_COUNT 4
 #define HARMONIC_STEP 12
 #define HORIZONTAL_MOTION 100
-#define DELAY 6000
+#define DELAY 5000
 #define FINAL_LEVEL 5
+#define SCORE_PER_LEVEL 500
 
 typedef char *string;
 
@@ -31,6 +32,7 @@ bool parabolic_motion = false;
 bool bounce = false;
 int x_player;
 int y_player;
+int displacement_y;
 
 void setup_aliens() {
 	create_aliens();
@@ -150,10 +152,12 @@ void update_aliens_druken() {
 		}
 		random_motion(alien);
 		alien->x += alien->dx;
-		if (is_alien((int) round(alien->x + alien->dx), (int) round(alien->y)) ||
-			is_alien((int) round(alien->x + alien->dx + 1), (int) round(alien->y))) {
+		if (is_alien((int) round(alien->x - alien->dx), (int) round(alien->y)) ||
+			is_alien((int) round(alien->x - (2 * alien->dx)), (int) round(alien->y)) ||
+			is_alien((int) round(alien->x + alien->dx), (int) round(alien->y)) ||
+			is_alien((int) round(alien->x + (2 * alien->dx)), (int) round(alien->y))) {
 			alien->dx = -alien->dx;
-			alien->x += alien->dx;
+			alien->x += alien->dx + alien->dx;
 		}
 		alien->y += alien->dy;
 		alien_crash(alien);
@@ -182,7 +186,7 @@ void update_aliens_aggressive() {
 			move_alien();
 		}
 
-		if (!reach_edge()) {
+		if (!reach_edge() && !moving()) {
 			update_agressive_motion();
 			if (collide()) {
 				aliens[random_alien_number]->is_visible = false;
@@ -276,16 +280,13 @@ void draw_aliens() {
 
 void change_alien_status(int x, int y) {
 	for (int i = 0; i < ALIEN_COUNT; i++) {
-		int alien_x = (int) round(aliens[i]->x);
-		int alien_y = (int) round(aliens[i]->y);
-		if (alien_x == x && alien_y == y) {
+		if (aliens[i]->x == x && aliens[i]->y == y) {
 			aliens[i]->is_visible = false;
 		}
 	}
 
-	if (get_level() == FINAL_LEVEL && 
-		aggressive_alien_x_pos() == x &&
-		aggressive_alien_y_pos() == y) {
+	if (get_level() == FINAL_LEVEL && aggressive_alien->x == x &&
+		aggressive_alien->y == y) {
 		aggressive_alien->x = ORIGIN;
 		aggressive_alien->y = ORIGIN;
 		aggressive_alien->is_visible = false;
@@ -425,6 +426,9 @@ void alien_crash(sprite_id alien) {
 
 	if (alive) {
 		if (alien_x == x_pos() && alien_y == y_pos()) {
+			if (alive_aliens_count() == 1) {
+				update_score(SCORE_PER_LEVEL);
+			}
 			change_alien_status(alien->x, alien->y);
 			update_lives();
 			reset_player_location();
@@ -437,9 +441,9 @@ void random_motion(sprite_id alien) {
 
 	if (motion % 2 == 0 || motion % 3 == 0 ||
 		motion % 5 == 0) {
-		alien->dx = 2;
+		alien->dx = 1;
 	} else {
-		alien->dx = -2;
+		alien->dx = -1;
 	} 
 }
 
@@ -451,30 +455,21 @@ bool aggressive_motion() {
 	}
 
 	random_alien_number = get_random_alien();
-	while (random_alien_number == 7) {
-		random_alien_number = get_random_alien();
-	}
+
 	aggressive_alien->x = aliens[random_alien_number]->x;
 	aggressive_alien->y = aliens[random_alien_number]->y;
 	aggressive_alien->is_visible = true;
+
 	aliens[random_alien_number]->is_visible = false;
 	parabolic_motion = true;
 	x_player = x_pos();
 	y_player = y_pos();
 
-	int x_distance = abs(x_player - aggressive_alien->x);
-	int y_distance = y_player - aggressive_alien->y;
-
-	while (x_distance != y_distance) {
-		if (x_distance > y_distance) {
-			x_distance--;
-		} else if (x_distance < y_distance) {
-			x_distance++;
-		}
-		moving_steps++;
-	}
-
-	moving_steps = moving_steps / 2;
+	int distance = abs(x_player - aggressive_alien_x_pos());
+	displacement_y = aggressive_alien_y_pos() 
+					+ (((screen_height() - 6) 
+					- aggressive_alien_y_pos()) / 2);
+	moving_steps = distance / 2;
 
 	return true;
 }
@@ -491,73 +486,70 @@ void draw_aggressive_alien() {
 
 
 int aggressive_alien_x_pos() {
-	int x = (int) round(aggressive_alien->x);
+	int x = aggressive_alien->x;
 	return x;
 }
 
 int aggressive_alien_y_pos() {
-	int y = (int) round(aggressive_alien->y);
+	int y = aggressive_alien->y;
 	return y;
 }
 
 void move_alien() {
- 	if (aggressive_alien->x > x_player) {
- 		aggressive_alien->x += -1;
- 		aggressive_alien->y += -1;
+ 	if (aggressive_alien->x >= x_player) {
+ 		aggressive_alien->x += -2;
+ 		// aggressive_alien->y += -1;
  		aggressive_alien->dx = -1;
  		aggressive_alien->dy = 1;
  	} else if (aggressive_alien->x < x_player) {
- 		aggressive_alien->x += 1;
- 		aggressive_alien->y += -1;
+ 		aggressive_alien->x += 2;
+ 		// aggressive_alien->y += -1;
  		aggressive_alien->dx = 1;
  		aggressive_alien->dy = 1;
- 	} else {
- 		aggressive_alien->y += -1;
- 		aggressive_alien->dx = 1;
- 		aggressive_alien->dy = 1;
- 	}
-
+ 	} 
  	moving_steps--;
 }
 
 void update_agressive_motion() {
-	if (bounce) { 
-		if (get_screen_char(aggressive_alien->x - aggressive_alien->dx, 
-			aggressive_alien->y + aggressive_alien->dy) == '@' ||
-			get_screen_char(aggressive_alien->x + aggressive_alien->dx, 
-			aggressive_alien->y + aggressive_alien->dy) == '@' ||
-			get_screen_char(aggressive_alien->x + aggressive_alien->dx + aggressive_alien->dx, 
-			aggressive_alien->y + aggressive_alien->dy + aggressive_alien->dy) == '@' ||
-			get_screen_char(aggressive_alien->x, 
-			aggressive_alien->y + aggressive_alien->dy) == '@' ||
-			get_screen_char(aggressive_alien->x, 
-			aggressive_alien->y - 1) == '@') {
-			aggressive_alien->dx = -aggressive_alien->dx;
-			aggressive_alien->x += aggressive_alien->dx;
-			aggressive_alien->y -= aggressive_alien->dy;
-			aggressive_alien->dx = -aggressive_alien->dx;
+	if (bounce) {
+		if (aggressive_alien->dx > 0) {
+			aggressive_alien->x -= 2;
+			aggressive_alien->y += aggressive_alien->dy;	
 		} else {
-			aggressive_alien->x += aggressive_alien->dx;
-			aggressive_alien->y -= aggressive_alien->dy;
+			aggressive_alien->x += 2;
+			aggressive_alien->y += aggressive_alien->dy;
 		}
-	} else if (aggressive_alien->y == y_player) {
-		aggressive_alien->x += aggressive_alien->dx;
-		aggressive_alien->y += 0;
-		step_count++;
 		aggressive_alien_crash();
-		if (step_count == 3) {
-			step_count = 0;
-			bounce = true;
-		}
-	} else {
-		if (aggressive_alien->x == x_player) {
+	} else if (aggressive_alien_x_pos() >= x_player) {
+		if (aggressive_alien_y_pos() == displacement_y - 1 ||
+			aggressive_alien_y_pos() == displacement_y) {
+			aggressive_alien->x += 0;
 			aggressive_alien->y += aggressive_alien->dy;
-			aggressive_alien_crash();
+			step_count++;
+			if (step_count == 2) {
+				step_count = 0;
+				bounce = true;
+			}
 		} else {
-			aggressive_alien->x += aggressive_alien->dx;
+			aggressive_alien->x += aggressive_alien->dx + aggressive_alien->dx;
 			aggressive_alien->y += aggressive_alien->dy;
-			aggressive_alien_crash();
 		}
+		aggressive_alien_crash();
+	} else if (aggressive_alien_x_pos() < x_player) {
+		if (aggressive_alien_y_pos() == displacement_y - 1 ||
+			aggressive_alien_y_pos() == displacement_y) {
+			aggressive_alien->x += 0;
+			aggressive_alien->y += aggressive_alien->dy;
+			step_count++;
+			if (step_count == 2) {
+				step_count = 0;
+				bounce = true;
+			}
+		} else {
+			aggressive_alien->x += aggressive_alien->dx + aggressive_alien->dx;
+			aggressive_alien->y += aggressive_alien->dy;
+		}
+		aggressive_alien_crash();
 	}
 }
 
@@ -579,6 +571,15 @@ bool collide() {
 		aggressive_alien_y_pos() == y_pos()) {
 		return true;
 	}
+
+	if (get_level() == FINAL_LEVEL) {
+		if ((aggressive_alien_x_pos() == x_pos() - 1 &&
+			aggressive_alien_y_pos() == y_pos()) ||
+			(aggressive_alien_x_pos() == x_pos() + 1 &&
+			aggressive_alien_y_pos() == y_pos())) {
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -592,8 +593,8 @@ bool moving() {
 bool reach_edge() {
 	int x = aggressive_alien->x;
 	int y = aggressive_alien->y;
-	if (y > 0 &&
-		(x > 0 && x < screen_width())) {
+	if (y < screen_height() - 5 &&
+		x > 0 && x < screen_width()) {
 		return false;
 	}
 	return true;
