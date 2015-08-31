@@ -84,8 +84,8 @@ int play_game() {
 	} else if (key == 'R' || key == 'r') {
 		reset_game();
 		return NORMAL_MODE;
-	} else if ((key == 'L' || key == 'l') &&
-				alive_aliens_count() == 0) {
+	} else if ((key == 'L' || key == 'l') /*&&
+				alive_aliens_count() == 0*/) {
 		level_up();
 		reset_player();
 		reset_aliens();
