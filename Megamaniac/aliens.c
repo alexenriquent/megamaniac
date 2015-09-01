@@ -443,7 +443,7 @@ void random_motion(sprite_id alien) {
 		motion % 5 == 0) {
 		alien->dx = 2;
 	} else {
-		alien->dx = -2;
+		alien->dx = -2; 
 	} 
 }
 

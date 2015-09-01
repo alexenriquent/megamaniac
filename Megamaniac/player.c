@@ -166,7 +166,7 @@ void update_player_bullet() {
 
 	if (is_alien(bullet_x, bullet_y)) {
 		bullet->is_visible = false;
-		change_alien_status(bullet->x, bullet->y);
+		change_alien_status(bullet_x, bullet_y);
 		bullet->y = 0;
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
@@ -178,7 +178,7 @@ void update_player_bullet() {
 		if (bullet_x == aggressive_alien_x_pos() &&
 			bullet_y == aggressive_alien_y_pos()) {
 			bullet->is_visible = false;
-			change_alien_status(bullet->x, bullet->y);
+			change_alien_status(bullet_x, bullet_y);
 			bullet->y = 0;
 			score += SCORE_PER_ALIEN;
 			if (alive_aliens_count() == 0) {
