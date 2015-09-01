@@ -9,7 +9,7 @@
 #define BULLET_COUNT 4
 #define HARMONIC_STEP 12
 #define HORIZONTAL_MOTION 100
-#define DELAY 5000
+#define DELAY 4500
 #define FINAL_LEVEL 5
 #define SCORE_PER_LEVEL 500
 
@@ -441,9 +441,9 @@ void random_motion(sprite_id alien) {
 
 	if (motion % 2 == 0 || motion % 3 == 0 ||
 		motion % 5 == 0) {
-		alien->dx = 1;
+		alien->dx = 2;
 	} else {
-		alien->dx = -1;
+		alien->dx = -2;
 	} 
 }
 

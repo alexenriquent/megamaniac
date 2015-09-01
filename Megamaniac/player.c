@@ -228,7 +228,7 @@ void update_left_curved_bullet() {
 
 	if (is_alien(curved_bullet_x, curved_bullet_y)) {
 		curved_bullet->is_visible = false;
-		change_alien_status(curved_bullet->x, curved_bullet->y);
+		change_alien_status(curved_bullet_x, curved_bullet_y);
 		curved_bullet->y = 0;
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
@@ -240,7 +240,7 @@ void update_left_curved_bullet() {
 		if (curved_bullet_x == aggressive_alien_x_pos() &&
 			curved_bullet_y == aggressive_alien_y_pos()) {
 			curved_bullet->is_visible = false;
-			change_alien_status(curved_bullet->x, curved_bullet->y);
+			change_alien_status(curved_bullet_x, curved_bullet_y);
 			curved_bullet->y = 0;
 			score += SCORE_PER_ALIEN;
 			if (alive_aliens_count() == 0) {
@@ -289,7 +289,7 @@ void update_right_curved_bullet() {
 
 	if (is_alien(curved_bullet_x, curved_bullet_y)) {
 		curved_bullet->is_visible = false;
-		change_alien_status(curved_bullet->x, curved_bullet->y);
+		change_alien_status(curved_bullet_x, curved_bullet_y);
 		curved_bullet->y = 0;
 		score += SCORE_PER_ALIEN;
 		if (alive_aliens_count() == 0) {
@@ -301,7 +301,7 @@ void update_right_curved_bullet() {
 		if (curved_bullet_x == aggressive_alien_x_pos() &&
 			curved_bullet_y == aggressive_alien_y_pos()) {
 			curved_bullet->is_visible = false;
-			change_alien_status(curved_bullet->x, curved_bullet->y);
+			change_alien_status(curved_bullet_x, curved_bullet_y);
 			curved_bullet->y = 0;
 			score += SCORE_PER_ALIEN;
 			if (alive_aliens_count() == 0) {
